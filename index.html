@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motion Mentor – Exercise & Workout Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Instrument+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --lime: #c8f135;
+    --lime-dim: #9dbf1e;
+    --bg: #080808;
+    --surface: #111;
+    --surface2: #181818;
+    --border: #222;
+    --text: #efefef;
+    --muted: #777;
+    --dim: #333;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Instrument Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CURSOR ─── */
+  #cursor {
+    position: fixed;
+    width: 10px; height: 10px;
+    background: var(--lime);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+    mix-blend-mode: difference;
+  }
+  #cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(200,241,53,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.18s ease, width 0.2s ease, height 0.2s ease;
+  }
+  body:hover #cursor { opacity: 1; }
+
+  /* ── NOISE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAVBAR ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: rgba(8,8,8,0.7);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: -0.5px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+  .nav-logo .logo-dot {
+    width: 8px; height: 8px;
+    background: var(--lime);
+    border-radius: 50%;
+    animation: breathe 2.5s ease infinite;
+  }
+  @keyframes breathe {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.6); opacity: 0.5; }
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.82rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  
+  /* ── HERO ─── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 3rem;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  /* background grid lines */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 80px 80px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* large blurred lime glow */
+  .hero-glow {
+    position: absolute;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(200,241,53,0.07) 0%, transparent 70%);
+    top: -200px; right: -200px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: float 8s ease-in-out infinite;
+  }
+  .hero-glow2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(200,241,53,0.04) 0%, transparent 70%);
+    bottom: 0; left: -100px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: float 11s ease-in-out infinite reverse;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-30px); }
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 1.8rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.2s forwards;
+  }
+  .hero-eyebrow span {
+    width: 24px;
+    height: 1px;
+    background: var(--lime);
+    display: inline-block;
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: -3px;
+    color: #fff;
+    margin-bottom: 1.2rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.35s forwards;
+  }
+  .hero-title .lime { color: var(--lime); }
+
+  /* ── DYNAMIC TEXT ROTATOR ─── */
+  .dynamic-line {
+    display: block;
+    overflow: hidden;
+    height: clamp(3rem, 8vw, 7rem);
+    margin-top: 0.1em;
+  }
+  .dynamic-words {
+    display: flex;
+    flex-direction: column;
+    transition: none;
+  }
+  .dynamic-word {
+    height: clamp(3rem, 10vw, 7rem);
+    display: flex;
+    align-items: center;
+    color: var(--lime);
+    flex-shrink: 0;
+    will-change: transform;
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.55s forwards;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.7s forwards;
+  }
+  .btn-primary {
+    background: var(--lime);
+    color: #080808;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.85rem 2rem;
+    border-radius: 50px;
+    border: none;
+    cursor: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .btn-primary:hover { background: #daff66; transform: scale(0.97); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.85rem 2rem;
+    border-radius: 50px;
+    border: 1px solid var(--dim);
+    cursor: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--lime); color: var(--lime); }
+
+  /* stats strip */
+  .hero-stats {
+    position: absolute;
+    bottom: 3rem;
+    left: 3rem;
+    right: 3rem;
+    z-index: 2;
+    display: flex;
+    gap: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.9s forwards;
+  }
+  .stat { display: flex; flex-direction: column; gap: 2px; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -1px;
+  }
+  .stat-num .lime { color: var(--lime); }
+  .stat-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .stat-divider { width: 1px; background: var(--dim); align-self: stretch; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── FEATURES ─── */
+  .section {
+    position: relative;
+    z-index: 1;
+    padding: 6rem 3rem;
+  }
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 20px; height: 1px;
+    background: var(--lime);
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.05;
+    color: #fff;
+    max-width: 600px;
+    margin-bottom: 4rem;
+  }
+  .section-title .lime { color: var(--lime); }
+
+  /* features grid */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.2rem;
+  }
+  .feat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .feat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--lime), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .feat-card:hover { border-color: rgba(200,241,53,0.3); transform: translateY(-4px); }
+  .feat-card:hover::before { opacity: 1; }
+  .feat-icon {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .feat-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #fff;
+    margin-bottom: 0.6rem;
+    letter-spacing: -0.3px;
+  }
+  .feat-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+
+  /* ── HOW IT WORKS ─── */
+  .steps-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0;
+    position: relative;
+  }
+  .steps-row::before {
+    content: '';
+    position: absolute;
+    top: 2rem;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--dim), transparent);
+  }
+  .step-block {
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+  }
+  .step-num-badge {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: var(--lime);
+  }
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+    letter-spacing: -0.2px;
+  }
+  .step-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── MARQUEE ─── */
+  .marquee-section {
+    padding: 3rem 0;
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+  .marquee-track {
+    display: flex;
+    gap: 3rem;
+    width: max-content;
+    animation: marquee 22s linear infinite;
+    white-space: nowrap;
+  }
+  .marquee-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .marquee-item span { color: var(--lime); font-size: 1.2rem; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ── DOWNLOAD CTA ─── */
+  .download-section {
+    position: relative;
+    z-index: 1;
+    margin: 0 3rem 4rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 5rem 4rem;
+    overflow: hidden;
+    text-align: center;
+  }
+  .download-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(200,241,53,0.08) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .download-section::after {
+    content: 'GET IT';
+    position: absolute;
+    right: -1rem;
+    bottom: -3rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 10rem;
+    font-weight: 800;
+    color: rgba(200,241,53,0.03);
+    letter-spacing: -6px;
+    pointer-events: none;
+    user-select: none;
+  }
+  .dl-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 1.2rem;
+  }
+  .dl-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.8rem);
+    font-weight: 800;
+    letter-spacing: -2px;
+    color: #fff;
+    line-height: 1.05;
+    margin-bottom: 1rem;
+  }
+  .dl-title .lime { color: var(--lime); }
+  .dl-sub {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 420px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.65;
+  }
+  .dl-btns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+  .store-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    color: #080808;
+    border-radius: 14px;
+    padding: 0.9rem 1.6rem;
+    text-decoration: none;
+    border: none;
+    cursor: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+    min-width: 180px;
+  }
+  .store-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+  }
+  .store-btn.dark {
+    background: #1c1c1e;
+    color: #fff;
+    border: 1px solid #333;
+  }
+  .store-btn.dark:hover { box-shadow: 0 12px 24px rgba(0,0,0,0.6); }
+  .store-icon { font-size: 1.6rem; flex-shrink: 0; }
+  .store-text { text-align: left; }
+  .store-small { font-size: 0.6rem; opacity: 0.6; display: block; letter-spacing: 0.5px; }
+  .store-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; display: block; line-height: 1.2; }
+  .dl-note {
+    margin-top: 1.5rem;
+    font-size: 0.72rem;
+    color: var(--dim);
+    letter-spacing: 0.3px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── FOOTER ─── */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+  }
+  .footer-logo .logo-dot { width: 6px; height: 6px; background: var(--lime); border-radius: 50%; }
+  .footer-copy { font-size: 0.72rem; color: var(--dim); }
+  .footer-links { display: flex; gap: 1.5rem; }
+  .footer-links a {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--lime); }
+
+  /* scroll animation utility */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { padding: 0 1.5rem; }
+    .hero-stats { left: 1.5rem; right: 1.5rem; gap: 1.5rem; flex-wrap: wrap; }
+    .section { padding: 4rem 1.5rem; }
+    .download-section { margin: 0 1.5rem 3rem; padding: 3rem 2rem; }
+    footer { padding: 2rem 1.5rem; }
+    .steps-row::before { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <span class="logo-dot"></span>
+    Motion Mentor
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#download">Download</a></li>
+  </ul>
+  
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span></span> Your personal fitness companion</div>
+    <h1 class="hero-title">
+      Your body,<br>
+      <span class="dynamic-line">
+        <div class="dynamic-words" id="dynWords">
+          <div class="dynamic-word">perfected.</div>
+          <div class="dynamic-word">stronger.</div>
+          <div class="dynamic-word">flexible.</div>
+          <div class="dynamic-word">energized.</div>
+          <div class="dynamic-word">unstoppable.</div>
+        </div>
+      </span>
+    </h1>
+    <p class="hero-sub">Motion Mentor gives you a curated exercise library — from beginner to advanced — with step-by-step form guides, GIF demos, and common mistake warnings.</p>
+    <div class="hero-actions">
+      <a href="VitaGenie.html" class="btn-primary" target="_blank">⚡ Try it on Web</a>
+      <a href="#download" class="btn-ghost">Download the app ↓</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">100<span class="lime">+</span></div>
+      <div class="stat-label">Exercises</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Difficulty levels</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">GIF<span class="lime">+</span></div>
+      <div class="stat-label">Visual guides</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">0<span class="lime">₹</span></div>
+      <div class="stat-label">Free to use</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track" id="marquee">
+    <div class="marquee-item"><span>⚡</span> Exercise Library</div>
+    <div class="marquee-item"><span>🎯</span> Muscle Focus</div>
+    <div class="marquee-item"><span>🟢</span> Beginner Friendly</div>
+    <div class="marquee-item"><span>🔴</span> Advanced Moves</div>
+    <div class="marquee-item"><span>📋</span> Step-by-Step</div>
+    <div class="marquee-item"><span>⚠️</span> Mistake Warnings</div>
+    <div class="marquee-item"><span>🛠️</span> Equipment Tips</div>
+    <div class="marquee-item"><span>🏋️</span> Full Body</div>
+    <div class="marquee-item"><span>⚡</span> Exercise Library</div>
+    <div class="marquee-item"><span>🎯</span> Muscle Focus</div>
+    <div class="marquee-item"><span>🟢</span> Beginner Friendly</div>
+    <div class="marquee-item"><span>🔴</span> Advanced Moves</div>
+    <div class="marquee-item"><span>📋</span> Step-by-Step</div>
+    <div class="marquee-item"><span>⚠️</span> Mistake Warnings</div>
+    <div class="marquee-item"><span>🛠️</span> Equipment Tips</div>
+    <div class="marquee-item"><span>🏋️</span> Full Body</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-label">What you get</div>
+  <h2 class="section-title">Everything you need to <span class="lime">train right.</span></h2>
+  <div class="features-grid">
+    <div class="feat-card reveal">
+      <span class="feat-icon">🎬</span>
+      <div class="feat-title">GIF Demonstrations</div>
+      <p class="feat-desc">Every exercise comes with a live animated GIF so you can see exactly how the movement looks before you start.</p>
+    </div>
+    <div class="feat-card reveal">
+      <span class="feat-icon">📋</span>
+      <div class="feat-title">Step-by-Step Instructions</div>
+      <p class="feat-desc">Detailed execution steps with focus cues for each phase of the movement — no guesswork, just clean form.</p>
+    </div>
+    <div class="feat-card reveal">
+      <span class="feat-icon">🎯</span>
+      <div class="feat-title">Muscle Targeting</div>
+      <p class="feat-desc">Know exactly which muscles you're hitting. Primary and secondary muscle groups are clearly labeled for every exercise.</p>
+    </div>
+    <div class="feat-card reveal">
+      <span class="feat-icon">⚠️</span>
+      <div class="feat-title">Mistake Prevention</div>
+      <p class="feat-desc">Common form errors flagged for every move so you can avoid injury and get the most out of every rep.</p>
+    </div>
+    <div class="feat-card reveal">
+      <span class="feat-icon">🟢🟠🔴</span>
+      <div class="feat-title">3 Difficulty Levels</div>
+      <p class="feat-desc">Beginner, Intermediate, and Advanced — clearly separated so you always train at the right intensity for your level.</p>
+    </div>
+    <div class="feat-card reveal">
+      <span class="feat-icon">🛠️</span>
+      <div class="feat-title">Equipment Aware</div>
+      <p class="feat-desc">Each exercise lists exactly what gear you need — or confirms you can do it with zero equipment at home.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how" style="padding-top:0;">
+  <div class="section-label">Simple as 1-2-3</div>
+  <h2 class="section-title">How <span class="lime">Motion Mentor</span> works.</h2>
+  <div class="steps-row">
+    <div class="step-block reveal">
+      <div class="step-num-badge">01</div>
+      <div class="step-title">Browse the library</div>
+      <p class="step-desc">Scroll through 100+ exercises organised by difficulty. Find exactly what fits your training goal today.</p>
+    </div>
+    <div class="step-block reveal">
+      <div class="step-num-badge">02</div>
+      <div class="step-title">Tap any exercise</div>
+      <p class="step-desc">Open the full guide — GIF preview, step-by-step cues, muscles worked, best time to do it, and more.</p>
+    </div>
+    <div class="step-block reveal">
+      <div class="step-num-badge">03</div>
+      <div class="step-title">Train with confidence</div>
+      <p class="step-desc">Follow the form guide, watch for flagged mistakes, and move better every single session.</p>
+    </div>
+    <div class="step-block reveal">
+      <div class="step-num-badge">04</div>
+      <div class="step-title">Level up</div>
+      <p class="step-desc">Once Beginner feels easy, move to Intermediate and Advanced. Motion Mentor grows with you.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD CTA -->
+<section id="download">
+  <div class="download-section reveal">
+    <div class="dl-eyebrow">📲 Available now</div>
+    <h2 class="dl-title">Take your workouts<br><span class="lime">everywhere.</span></h2>
+    <p class="dl-sub">Download Motion Mentor free on iOS and Android. Your entire exercise library — offline, always in your pocket.</p>
+    <div class="dl-btns">
+      <a href="#" class="store-btn">
+        <span class="store-icon">🍎</span>
+        <div class="store-text">
+          <span class="store-small">Download on the</span>
+          <span class="store-name">App Store</span>
+        </div>
+      </a>
+      <a href="#" class="store-btn dark">
+        <span class="store-icon">▶</span>
+        <div class="store-text">
+          <span class="store-small">Get it on</span>
+          <span class="store-name">Google Play</span>
+        </div>
+      </a>
+    </div>
+    <div class="dl-note">Free download · No subscription required · Works offline</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo"><span class="logo-dot"></span> Motion Mentor</a>
+  <span class="footer-copy">© 2025 Motion Mentor. All rights reserved.</span>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="motion_mentor_updated.html" target="_blank">Launch App →</a>
+  </div>
+</footer>
+
+<script>
+  // ── CURSOR
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '18px'; cursor.style.height = '18px';
+      ring.style.width = '52px'; ring.style.height = '52px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '10px'; cursor.style.height = '10px';
+      ring.style.width = '36px'; ring.style.height = '36px';
+    });
+  });
+
+  // ── DYNAMIC TEXT ROTATOR (only runs once through all words at page start)
+  (function() {
+    const words = document.getElementById('dynWords');
+    const items = words.querySelectorAll('.dynamic-word');
+    const total = items.length;
+    const itemH = items[0].offsetHeight;
+    let idx = 0;
+    let done = false;
+
+    function next() {
+      if (done) return;
+      idx++;
+      if (idx >= total) { done = true; return; }
+      words.style.transition = 'transform 0.55s cubic-bezier(0.76,0,0.24,1)';
+      words.style.transform = `translateY(-${idx * itemH}px)`;
+      // speed up early, slow down at end
+      const delay = idx < total - 1 ? 1200 : 9999;
+      setTimeout(next, delay);
+    }
+
+    // start after hero animations load
+    setTimeout(next, 1800);
+  })();
+
+  // ── SCROLL REVEAL
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
