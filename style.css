@@ -18,7 +18,7 @@
 body {
     color: #ffe8e8;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background:
+    /* background:
         conic-gradient(from 180deg at 50% 50%,
             #0f1422,
             #1a1f2e,
@@ -29,7 +29,8 @@ body {
             #0b101d),
         radial-gradient(circle at center,
             rgba(255, 255, 255, 0.03),
-            transparent 70%);
+            transparent 70%); */
+    conic-gradient(from 180deg at 50% 50%, #0a0f1c 0deg, #1a1f2e 60deg, #000000 120deg, #000000 180deg, #000000 240deg, #0b0e17 300deg, #0a0f1c 360deg)
     min-height: 100vh;
     display: flex;
     align-items: center;
