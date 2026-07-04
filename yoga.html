@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Motion Mentor | Yoga Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent:      #10b981;
+            --accent-dark: #059669;
+            --bg:          #080808;
+            --card-bg:     #101010;
+            --border:      #1e1e1e;
+            --text:        #e8e8e8;
+            --muted:       #888;
+            --dim:         #444;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', system-ui, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── HEADER ─────────────────────────── */
+        .hdr {
+            position: relative;
+            padding: 2.8rem 2.5rem 2rem;
+            background: linear-gradient(160deg, #0a1a10 0%, #080808 65%);
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .hdr::before {
+            content: 'YOGA';
+            position: absolute;
+            right: -1rem; top: -1.5rem;
+            font-family: 'Syne', sans-serif;
+            font-size: 9rem;
+            font-weight: 800;
+            color: rgba(16,185,129,0.04);
+            letter-spacing: -4px;
+            pointer-events: none;
+            user-select: none;
+        }
+        .eyebrow {
+            font-size: 0.68rem;
+            letter-spacing: 3px;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .live-dot {
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease infinite;
+        }
+        @keyframes pulse {
+            0%,100% { opacity:1; transform:scale(1); }
+            50%      { opacity:0.4; transform:scale(0.65); }
+        }
+        .htitle {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.05;
+            color: #fff;
+        }
+        .htitle span { color: var(--accent); }
+        .hsub {
+            margin-top: 0.7rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+            max-width: 480px;
+        }
+
+        /* ── SEARCH ─────────────────────────── */
+        .search-wrap {
+            padding: 1rem 2.5rem 0.7rem;
+            position: sticky;
+            top: 0;
+            background: rgba(8,8,8,0.96);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #131313;
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 0.65rem 1.2rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            max-width: 600px;
+        }
+        .search-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.09);
+        }
+        .si { color: var(--muted); font-size: 0.9rem; flex-shrink: 0; }
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 0.88rem;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            flex: 1;
+            min-width: 0;
+        }
+        .search-box input::placeholder { color: var(--dim); }
+        .clear-btn {
+            background: #1e1e1e;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: 0.15s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .clear-btn:hover { background: #2a2a2a; color: var(--text); }
+
+        /* ── STATS ──────────────────────────── */
+        .stats-row {
+            padding: 0.5rem 2.5rem;
+            font-size: 0.73rem;
+            color: var(--muted);
+            min-height: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        /* ── SECTION HEADING ────────────────── */
+        .sec-head {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 2rem 2.5rem 0.7rem;
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1rem, 2.5vw, 1.35rem);
+            font-weight: 700;
+            color: var(--text);
+        }
+        .level-pill {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 400;
+            color: var(--muted);
+            background: #131313;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2px 10px;
+        }
+
+        /* ── GRID ───────────────────────────── */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 1.2rem;
+            padding: 0.2rem 2.5rem 1.8rem;
+        }
+
+        /* ── CARD ───────────────────────────── */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.22s, transform 0.22s, box-shadow 0.22s;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 22px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(16,185,129,0.07);
+        }
+        .card-media {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #151515;
+            overflow: hidden;
+        }
+        .card-media img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s;
+        }
+        .card:hover .card-media img { transform: scale(1.04); }
+        .diff-badge {
+            position: absolute;
+            top: 8px; left: 8px;
+            background: rgba(8,8,8,0.82);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 0.62rem;
+            letter-spacing: 0.4px;
+            color: var(--muted);
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+        }
+        .card-body {
+            padding: 0.9rem 1.1rem 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .card-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.3;
+        }
+        .card-meta {
+            font-size: 0.72rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px 8px;
+        }
+        .card-hint {
+            margin-top: auto;
+            padding-top: 0.55rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.62rem;
+            color: var(--dim);
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
+        /* ── LOADING ────────────────────────── */
+        #loading_msg {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 45vh;
+            gap: 1.2rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .spinner {
+            width: 44px; height: 44px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-sub { font-size: 0.72rem; color: var(--dim); }
+
+        /* ── ERROR ──────────────────────────── */
+        #error_msg {
+            max-width: 620px;
+            margin: 3rem auto;
+            background: #120e0e;
+            border: 1px solid #3a1c1c;
+            border-left: 4px solid #ff5050;
+            border-radius: 18px;
+            padding: 2rem;
+            text-align: center;
+            display: none;
+        }
+        #error_msg code {
+            display: inline-block;
+            background: #000;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            word-break: break-all;
+            margin-top: 0.4rem;
+        }
+        .retry-btn {
+            margin-top: 1.2rem;
+            background: var(--accent);
+            border: none;
+            color: #080808;
+            font-weight: 700;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            padding: 0.6rem 1.6rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+        .retry-btn:hover { opacity: 0.85; }
+
+        /* ── NO RESULTS ─────────────────────── */
+        .no-results {
+            padding: 4rem 2.5rem;
+            text-align: center;
+            color: var(--muted);
+        }
+        .no-results .nr-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.6rem;
+        }
+        .no-results .nr-sub { font-size: 0.82rem; line-height: 1.7; }
+
+        /* ── MODAL ──────────────────────────── */
+        .modal-bg {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-bg.open { display: flex; }
+        .modal {
+            background: #0e0e0e;
+            border: 1px solid #252525;
+            border-radius: 24px;
+            max-width: 660px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 1.8rem 2rem 2.4rem;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.75);
+            scrollbar-width: thin;
+            scrollbar-color: #2a2a2a transparent;
+            margin: auto;
+            animation: modalIn 0.22s cubic-bezier(.22,.68,0,1.15);
+        }
+        @keyframes modalIn {
+            from { opacity:0; transform:translateY(16px) scale(0.97); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
+        }
+        .modal::-webkit-scrollbar { width: 4px; }
+        .modal::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
+
+        .close-btn {
+            float: right;
+            background: #1a1a1a;
+            border: 1px solid #2e2e2e;
+            color: var(--muted);
+            padding: 5px 16px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-bottom: 0.8rem;
+        }
+        .close-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+
+        .modal img {
+            width: 100%;
+            border-radius: 14px;
+            display: block;
+            margin-bottom: 1.1rem;
+            background: #181818;
+        }
+        .modal-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1.2;
+            margin-bottom: 0.35rem;
+        }
+        .modal-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1.1rem;
+        }
+        .chip {
+            background: #181818;
+            border: 1px solid #262626;
+            border-radius: 20px;
+            padding: 3px 11px;
+            font-size: 0.68rem;
+            color: var(--muted);
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.55rem;
+            margin-bottom: 1.1rem;
+        }
+        .info-cell {
+            background: #141414;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.65rem 0.85rem;
+        }
+        .info-lbl {
+            font-size: 0.6rem;
+            color: var(--dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+        .info-val { font-size: 0.8rem; color: var(--text); font-weight: 500; line-height: 1.4; }
+
+        .safety-box {
+            background: #111;
+            border-left: 3px solid var(--accent);
+            border-radius: 0 10px 10px 0;
+            padding: 0.85rem 1rem;
+            font-size: 0.8rem;
+            color: #bbb;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        .safety-box strong { color: var(--accent); }
+
+        .steps-title, .mistakes-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            margin: 1.3rem 0 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .steps-title    { color: var(--accent); }
+        .mistakes-title { color: #ff9d3b; }
+        .steps-title::after,
+        .mistakes-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        .step {
+            display: flex;
+            gap: 0.85rem;
+            margin-bottom: 0.85rem;
+            align-items: flex-start;
+        }
+        .step-num {
+            flex-shrink: 0;
+            width: 24px; height: 24px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'Syne', sans-serif;
+        }
+        .step-focus {
+            font-size: 0.63rem;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+        .step-text { font-size: 0.82rem; color: #c4c4c4; line-height: 1.55; }
+
+        .mistake {
+            display: flex;
+            gap: 0.7rem;
+            align-items: flex-start;
+            margin-bottom: 0.55rem;
+            font-size: 0.81rem;
+            color: #bbb;
+            line-height: 1.5;
+        }
+        .mistake::before {
+            content: '!';
+            flex-shrink: 0;
+            width: 17px; height: 17px;
+            background: rgba(255,157,59,0.1);
+            border: 1px solid rgba(255,157,59,0.28);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: #ff9d3b;
+            margin-top: 1px;
+        }
+
+        .highlight { background: rgba(16,185,129,0.18); border-radius: 2px; padding: 0 1px; }
+
+        /* ── RESPONSIVE ─────────────────────── */
+        @media (max-width: 640px) {
+            .hdr         { padding: 1.8rem 1.2rem 1.4rem; }
+            .search-wrap { padding: 0.8rem 1.2rem 0.5rem; }
+            .stats-row   { padding: 0.4rem 1.2rem; }
+            .sec-head    { padding: 1.5rem 1.2rem 0.5rem; }
+            .grid        { padding: 0.2rem 1.2rem 1.5rem; gap: 0.9rem; }
+            .modal       { padding: 1.2rem 1rem 1.8rem; }
+            .info-grid   { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hdr">
+    <div class="eyebrow"><span class="live-dot"></span>Motion Mentor · Yoga Library</div>
+    <div class="htitle">Yoga <span>Studio</span></div>
+    <div class="hsub">Complete yoga &amp; flexibility library — tap any card for full guide</div>
+</div>
+
+<div class="search-wrap">
+    <div class="search-box">
+        <span class="si">🔍</span>
+        <input type="text" id="search" placeholder="Search poses, muscles, difficulty…" autocomplete="off" spellcheck="false"/>
+        <button class="clear-btn" id="clearBtn" style="display:none">✕ Clear</button>
+    </div>
+</div>
+
+<div class="stats-row" id="statsRow"></div>
+
+<div id="loading_msg">
+    <div class="spinner"></div>
+    <div>Fetching yoga poses from repository…</div>
+    <div class="loading-sub">yoga.xml · github raw</div>
+</div>
+
+<div id="error_msg"></div>
+<div id="container"></div>
+
+<div class="modal-bg" id="modal">
+    <div class="modal" id="modalInner">
+        <button class="close-btn" id="closeBtn">✕ Close</button>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const XML_RAW_URL = 'https://raw.githubusercontent.com/Hunny-Chaurasia/-myHealthyFitness/main/yoga.xml';
+
+    const LEVEL_ORDER = ['Beginner','Novice','Intermediate','Advanced','Expert'];
+    const LEVEL_DOT   = { Beginner:'#10b981', Novice:'#6ee7b7', Intermediate:'#f59e0b', Advanced:'#f97316', Expert:'#ef4444' };
+    const FALLBACK_IMG = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180"%3E%3Crect width="320" height="180" fill="%23151515"/%3E%3Ctext x="50%25" y="50%25" fill="%23444" font-size="12" font-family="sans-serif" text-anchor="middle" dy=".3em"%3EPreview unavailable%3C/text%3E%3C/svg%3E';
+
+    /* ── XML PARSERS ── */
+    function getText(parent, tag) {
+        if (!parent) return '';
+        const el = parent.getElementsByTagName(tag)[0];
+        return el ? el.textContent.trim() : '';
+    }
+
+    // FIX 1: XML uses <n> tag for name, not <Name>. Support both.
+    function extractName(pose) {
+        return getText(pose, 'Name') || getText(pose, 'n') || 'Unnamed Pose';
+    }
+
+    // FIX 2: Muscles can be plain text in <Focused_Muscles> OR inside <Primary>
+    function extractMuscles(pose) {
+        const node = pose.getElementsByTagName('Focused_Muscles')[0];
+        if (!node) return getText(pose, 'Muscles') || '';
+        const p = node.getElementsByTagName('Primary')[0];
+        if (p) return p.textContent.trim();
+        // fallback: plain text content of Focused_Muscles (strip child tags text)
+        const clone = node.cloneNode(true);
+        // remove child elements to get only direct text
+        return node.textContent.trim().replace(/\s+/g, ' ');
+    }
+
+    function extractMusclesSec(pose) {
+        const node = pose.getElementsByTagName('Focused_Muscles')[0];
+        if (!node) return '';
+        const s = node.getElementsByTagName('Secondary')[0];
+        return s ? s.textContent.trim() : '';
+    }
+
+    function extractMusclesStab(pose) {
+        const node = pose.getElementsByTagName('Focused_Muscles')[0];
+        if (!node) return '';
+        const s = node.getElementsByTagName('Stabilizers')[0];
+        return s ? s.textContent.trim() : '';
+    }
+
+    function extractDiseases(pose) {
+        const node = pose.getElementsByTagName('Diseases_Cured')[0];
+        if (!node) return getText(pose, 'Benefits') || '';
+        const t = node.getElementsByTagName('Targeted')[0];
+        return t ? t.textContent.trim() : node.textContent.trim().replace(/\s+/g, ' ');
+    }
+
+    function extractDiseasePrev(pose) {
+        const node = pose.getElementsByTagName('Diseases_Cured')[0];
+        if (!node) return '';
+        const p = node.getElementsByTagName('Preventive')[0];
+        return p ? p.textContent.trim() : '';
+    }
+
+    // FIX 3: extractGif - also handle <Image> and <image> tags properly
+    function extractGif(pose) {
+        const urlNodes = pose.getElementsByTagName('url');
+        for (const u of urlNodes) {
+            const t = u.getAttribute('type');
+            if (!t || t === 'gif') {
+                const val = u.textContent.trim();
+                if (val) return val;
+            }
+        }
+        for (const tag of ['gif', 'Gif', 'GIF', 'Image', 'image']) {
+            const el = pose.getElementsByTagName(tag)[0];
+            if (el) {
+                const val = el.textContent.trim();
+                if (val) return val;
+            }
+        }
+        return '';
+    }
+
+    function extractSteps(pose) {
+        return Array.from(pose.getElementsByTagName('step')).map((s, i) => ({
+            order: s.getAttribute('order') || String(i + 1),
+            focus: s.getAttribute('focus') || '',
+            text:  s.textContent.trim().replace(/\s+/g, ' ')
+        }));
+    }
+
+    function extractMistakes(pose) {
+        const out = [];
+        const cm = pose.getElementsByTagName('common_mistakes')[0];
+        const src = cm || pose;
+        for (const m of src.getElementsByTagName('mistake')) {
+            const t = m.textContent.trim();
+            if (t && !out.includes(t)) out.push(t);
+        }
+        return out.slice(0, 8);
+    }
+
+    function extractSafety(pose) {
+        // FIX 4: safety is also in the attribute of <Pose> tag — check attribute first
+        const attrSafety = pose.getAttribute('safety');
+        if (attrSafety && attrSafety.trim()) return attrSafety.trim();
+        for (const tag of ['Safety', 'safety', 'Caution', 'caution']) {
+            const el = pose.getElementsByTagName(tag)[0];
+            if (el) return el.textContent.trim().replace(/\s+/g, ' ');
+        }
+        return '';
+    }
+
+    // FIX 5: extractAgeGroup - XML uses Age_Grp attribute name varies
+    function extractAgeGroup(pose) {
+        return getText(pose, 'Age_Group') || getText(pose, 'AgeGroup') || getText(pose, 'Age_Grp') || '';
+    }
+
+    // FIX 6: extractPoseType - also in Pose_type attribute
+    function extractPoseType(pose) {
+        return pose.getAttribute('Pose_type') || getText(pose, 'PoseType') || getText(pose, 'Pose_Type') || 'Yoga';
+    }
+
+    function normDiff(raw) {
+        const r = (raw || '').toLowerCase();
+        if (r.includes('expert'))       return 'Expert';
+        if (r.includes('advanc'))       return 'Advanced';
+        if (r.includes('intermediate')) return 'Intermediate';
+        if (r.includes('novice'))       return 'Novice';
+        return 'Beginner';
+    }
+
+    // FIX 7: XML has TWO <YogaPoseCatalog> root elements (two separate XML docs concatenated).
+    // Standard DOMParser only reads the first root. We need to handle this by splitting and parsing both.
+    function parsePoses(xmlDoc) {
+        const nodes = xmlDoc.getElementsByTagName('Pose');
+        if (!nodes.length) throw new Error('No <Pose> elements found in yoga.xml');
+        return Array.from(nodes).map((p, i) => ({
+            id:               p.getAttribute('id') || String(i),
+            name:             extractName(p),
+            difficulty:       normDiff(p.getAttribute('difficulty') || getText(p, 'Difficulty')),
+            poseType:         extractPoseType(p),
+            safety:           extractSafety(p),
+            gif:              extractGif(p),
+            equipment:        getText(p, 'Equipment'),
+            muscles:          extractMuscles(p),
+            musclesSecondary: extractMusclesSec(p),
+            musclesStab:      extractMusclesStab(p),
+            ageGrp:           extractAgeGroup(p),
+            preferredTime:    getText(p, 'Preferred_Time') || getText(p, 'Preferred'),
+            holdTime:         getText(p, 'Hold_Time'),
+            diseases:         extractDiseases(p),
+            diseasePrev:      extractDiseasePrev(p),
+            steps:            extractSteps(p),
+            mistakes:         extractMistakes(p)
+        }));
+    }
+
+    /* ── FETCH WITH FALLBACKS ── */
+    async function fetchXML() {
+        const proxies = [
+            XML_RAW_URL,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(XML_RAW_URL)}`,
+            `https://corsproxy.io/?${encodeURIComponent(XML_RAW_URL)}`,
+            `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(XML_RAW_URL)}`
+        ];
+        for (const url of proxies) {
+            try {
+                const r = await fetch(url, { cache: 'no-store' });
+                if (!r.ok) continue;
+                const txt = await r.text();
+                if (txt.includes('<Pose')) return txt;
+            } catch (_) {}
+        }
+        return null;
+    }
+
+    // FIX 8: The XML file has TWO <?xml ...?> declarations and TWO root elements.
+    // We need to split them, parse each separately, and merge all <Pose> elements.
+    function parseMultiRootXML(rawStr) {
+        // Fix bare & entities first
+        const fixed = rawStr.replace(/&(?!(amp|lt|gt|quot|apos|#x?[0-9a-fA-F]+);)/g, '&amp;');
+
+        // Split on second XML declaration if present
+        const xmlDeclRegex = /<\?xml[^?]*\?>/g;
+        const matches = [];
+        let m;
+        while ((m = xmlDeclRegex.exec(fixed)) !== null) {
+            matches.push(m.index);
+        }
+
+        const parser = new DOMParser();
+        const allPoses = [];
+
+        if (matches.length <= 1) {
+            // Normal single document
+            const doc = parser.parseFromString(fixed, 'text/xml');
+            const pe = doc.querySelector('parsererror');
+            if (pe) throw new Error('XML parse error: ' + pe.textContent.slice(0, 200));
+            return parsePoses(doc);
+        }
+
+        // Multiple XML declarations found — split and parse each chunk
+        for (let i = 0; i < matches.length; i++) {
+            const start = matches[i];
+            const end = i + 1 < matches.length ? matches[i + 1] : fixed.length;
+            const chunk = fixed.slice(start, end).trim();
+            if (!chunk.includes('<Pose')) continue;
+            try {
+                const doc = parser.parseFromString(chunk, 'text/xml');
+                const pe = doc.querySelector('parsererror');
+                if (pe) continue; // skip broken chunk
+                const poses = parsePoses(doc);
+                allPoses.push(...poses);
+            } catch (_) {}
+        }
+
+        if (!allPoses.length) throw new Error('No valid <Pose> elements found after parsing all XML chunks.');
+        return allPoses;
+    }
+
+    /* ── STATE ── */
+    let ALL_POSES = [];
+
+    /* ── UTILS ── */
+    function esc(s) {
+        return String(s || '').replace(/[&<>"']/g, m =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+
+    function hl(text, q) {
+        if (!q) return esc(text);
+        const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+        return esc(text).replace(re, '<mark class="highlight">$1</mark>');
+    }
+
+    function score(pose, lq) {
+        if (!lq) return 1;
+        let s = 0;
+        if (pose.name.toLowerCase().includes(lq))                    s += 10;
+        if (pose.muscles.toLowerCase().includes(lq))                 s += 5;
+        if (pose.poseType.toLowerCase().includes(lq))                s += 4;
+        if (pose.difficulty.toLowerCase().includes(lq))              s += 4;
+        if (pose.diseases.toLowerCase().includes(lq))                s += 3;
+        if ((pose.equipment || '').toLowerCase().includes(lq))       s += 2;
+        if ((pose.musclesSecondary || '').toLowerCase().includes(lq)) s += 2;
+        if ((pose.safety || '').toLowerCase().includes(lq))          s += 1;
+        if ((pose.ageGrp || '').toLowerCase().includes(lq))          s += 1;
+        (pose.steps || []).forEach(st => { if (st.text.toLowerCase().includes(lq)) s++; });
+        return s;
+    }
+
+    /* ── RENDER ── */
+    function render(query) {
+        const container = document.getElementById('container');
+        const statsRow  = document.getElementById('statsRow');
+        container.innerHTML = '';
+        const q  = (query || '').trim();
+        const lq = q.toLowerCase();
+        let list = ALL_POSES.map(p => ({ pose: p, s: score(p, lq) }));
+        if (q) list = list.filter(x => x.s > 0);
+        list.sort((a, b) => b.s - a.s);
+
+        if (q && !list.length) {
+            statsRow.textContent = '';
+            container.innerHTML = `<div class="no-results"><div class="nr-title">No poses found for "${esc(q)}"</div><div class="nr-sub">Try: pose name · muscle group · difficulty · benefit<br>e.g. "hip", "beginner", "balance", "core", "inversion"</div></div>`;
+            return;
+        }
+        if (q) {
+            const exact   = list.filter(x => x.s >= 10);
+            const related = list.filter(x => x.s > 0 && x.s < 10);
+            statsRow.textContent = `${exact.length} matching · ${related.length} related — "${q}"`;
+            if (exact.length)   addSection(container, 'Matching poses',  exact.length,   null, exact, q);
+            if (related.length) addSection(container, 'Related poses', related.length,   null, related, q);
+            return;
+        }
+        statsRow.textContent = `${ALL_POSES.length} poses`;
+        const groups = {};
+        ALL_POSES.forEach(p => { (groups[p.difficulty] = groups[p.difficulty] || []).push(p); });
+        [...LEVEL_ORDER.filter(l => groups[l]), ...Object.keys(groups).filter(k => !LEVEL_ORDER.includes(k))]
+            .forEach(lvl => addSection(container, lvl, groups[lvl].length, LEVEL_DOT[lvl] || '#888',
+                groups[lvl].map(p => ({ pose: p, s: 1 })), ''));
+    }
+
+    function addSection(container, label, count, dot, items, q) {
+        const sh = document.createElement('div');
+        sh.className = 'sec-head';
+        sh.innerHTML = `${dot ? `<span style="width:8px;height:8px;border-radius:50%;background:${dot};display:inline-block;flex-shrink:0"></span>` : ''}${esc(label)} <span class="level-pill">${count} pose${count !== 1 ? 's' : ''}</span>`;
+        container.appendChild(sh);
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+        items.forEach(x => grid.appendChild(buildCard(x.pose, q)));
+        container.appendChild(grid);
+    }
+
+    function buildCard(pose, q) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const poseTypeLabel = (pose.poseType || '').split(',')[0].trim();
+        card.innerHTML = `
+            <div class="card-media">
+                <img src="${esc(pose.gif || FALLBACK_IMG)}" alt="${esc(pose.name)}" loading="lazy"
+                     onerror="this.src='${FALLBACK_IMG}'">
+                <div class="diff-badge">${esc(pose.difficulty)}${poseTypeLabel ? ' · ' + esc(poseTypeLabel) : ''}</div>
+            </div>
+            <div class="card-body">
+                <div class="card-name">${hl(pose.name, q)}</div>
+                <div class="card-meta">
+                    ${pose.muscles   ? `<span>🎯 ${hl(pose.muscles.slice(0, 55), q)}</span>` : ''}
+                    ${pose.equipment ? `<span>🛠 ${esc(pose.equipment.slice(0, 35))}</span>` : ''}
+                    ${pose.holdTime  ? `<span>⏱ ${esc(pose.holdTime)}</span>` : ''}
+                </div>
+                <div class="card-hint">Tap for full guide</div>
+            </div>`;
+        card.addEventListener('click', () => openModal(pose));
+        return card;
+    }
+
+    /* ── MODAL ── */
+    function openModal(pose) {
+        const mb = document.getElementById('modalBody');
+        mb.innerHTML = '';
+
+        if (pose.gif) {
+            const img = document.createElement('img');
+            img.src = pose.gif;
+            img.alt = pose.name;
+            img.onerror = () => img.remove();
+            mb.appendChild(img);
+        }
+
+        mb.innerHTML += `<div class="modal-title">${esc(pose.name)}</div>`;
+
+        const chips = document.createElement('div');
+        chips.className = 'modal-chips';
+        [pose.difficulty, ...(pose.poseType || '').split(',').map(s => s.trim()), pose.ageGrp]
+            .filter(Boolean)
+            .forEach(t => { chips.innerHTML += `<span class="chip">${esc(t)}</span>`; });
+        mb.appendChild(chips);
+
+        // FIX 9: Added Hold_Time to info grid
+        const gridRows = [
+            ['Equipment',       pose.equipment],
+            ['Hold Time',       pose.holdTime],
+            ['Primary muscles', pose.muscles],
+            ['Secondary',       pose.musclesSecondary],
+            ['Stabilizers',     pose.musclesStab],
+            ['Best time',       pose.preferredTime],
+            ['Targets',         pose.diseases],
+            ['Preventive',      pose.diseasePrev]
+        ].filter(([, v]) => v);
+
+        if (gridRows.length) {
+            const g = document.createElement('div');
+            g.className = 'info-grid';
+            gridRows.forEach(([l, v]) => {
+                g.innerHTML += `<div class="info-cell"><div class="info-lbl">${esc(l)}</div><div class="info-val">${esc(v)}</div></div>`;
+            });
+            mb.appendChild(g);
+        }
+
+        if (pose.safety) {
+            mb.innerHTML += `<div class="safety-box"><strong>⚠ Safety:</strong> ${esc(pose.safety)}</div>`;
+        }
+
+        if (pose.steps && pose.steps.length) {
+            mb.innerHTML += `<div class="steps-title">Pose instructions</div>`;
+            pose.steps.forEach(s => {
+                const d = document.createElement('div');
+                d.className = 'step';
+                d.innerHTML = `<div class="step-num">${esc(s.order)}</div><div>${s.focus ? `<div class="step-focus">${esc(s.focus)}</div>` : ''}<div class="step-text">${esc(s.text)}</div></div>`;
+                mb.appendChild(d);
+            });
+        }
+
+        if (pose.mistakes && pose.mistakes.length) {
+            mb.innerHTML += `<div class="mistakes-title">Common mistakes</div>`;
+            pose.mistakes.forEach(m => {
+                const d = document.createElement('div');
+                d.className = 'mistake';
+                d.textContent = m;
+                mb.appendChild(d);
+            });
+        }
+
+        document.getElementById('modal').classList.add('open');
+        document.getElementById('modalInner').scrollTop = 0;
+    }
+
+    function closeModal() { document.getElementById('modal').classList.remove('open'); }
+    document.getElementById('closeBtn').addEventListener('click', closeModal);
+    document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    /* ── SEARCH ── */
+    let debTimer;
+    document.getElementById('search').addEventListener('input', function () {
+        const v = this.value.trim();
+        document.getElementById('clearBtn').style.display = v ? 'block' : 'none';
+        clearTimeout(debTimer);
+        debTimer = setTimeout(() => render(v), 180);
+    });
+    document.getElementById('clearBtn').addEventListener('click', () => {
+        document.getElementById('search').value = '';
+        document.getElementById('clearBtn').style.display = 'none';
+        render('');
+    });
+
+    /* ── INIT ── */
+    async function init() {
+        const loadEl = document.getElementById('loading_msg');
+        const errEl  = document.getElementById('error_msg');
+        loadEl.style.display = 'flex';
+        errEl.style.display  = 'none';
+        try {
+            const xmlStr = await fetchXML();
+            if (!xmlStr) throw new Error('All fetch sources failed. Check if repo is public and yoga.xml exists.');
+            // FIX 8: Use multi-root aware parser
+            ALL_POSES = parseMultiRootXML(xmlStr);
+            // FIX 10: Deduplicate by id (XML had duplicate poses across two catalog blocks)
+            const seen = new Set();
+            ALL_POSES = ALL_POSES.filter(p => {
+                if (seen.has(p.id)) return false;
+                seen.add(p.id);
+                return true;
+            });
+            loadEl.style.display = 'none';
+            render('');
+        } catch (err) {
+            console.error('[YogaLib]', err);
+            loadEl.style.display = 'none';
+            errEl.style.display  = 'block';
+            errEl.innerHTML = `
+                <div style="font-size:1.1rem;margin-bottom:.6rem">⚠️ Could not load poses</div>
+                <div style="background:#0a0a0a;padding:.8rem;border-radius:10px;font-size:.78rem;color:#bbb">${esc(err.message)}</div>
+                <div style="margin-top:.8rem;font-size:.72rem;color:#555">Expected file: <code>${esc(XML_RAW_URL)}</code></div>
+                <button class="retry-btn" id="retryBtn">⟳ Retry</button>`;
+            document.getElementById('retryBtn')?.addEventListener('click', init);
+        }
+    }
+
+    init();
+})();
+</script>
+</body>
+</html>

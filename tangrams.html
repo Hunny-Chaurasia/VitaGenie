@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Motion Mentor Tangrams | @myMotionMentor</title>
+  <link rel="icon" href="WhatsApp Image 2025-09-24 at 10.58.05 PM.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet"/>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; text-align:center; overflow:visible; }
+body {
+    color:#ffe8e8;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:
+        conic-gradient(from 180deg at 50% 50%,#0f1422,#1a1f2e,#0a0f1c,#161b2a,#0a0f1c,#1a1f2e,#0b101d),
+        radial-gradient(circle at center,rgba(255,255,255,0.03),transparent 70%);
+    min-height:100vh;
+    display:flex; align-items:flex-start; justify-content:center;
+    padding:20px;
+}
+:root {
+    --gold:#ffd966; --gold2:#c49a00;
+}
+
+#game-wrapper { width:100%; min-height:100vh; padding:0 0 60px; }
+
+/* TOP BAR */
+.topbar { display:flex; justify-content:space-between; align-items:center; padding:12px 20px; margin-bottom:20px; background:rgba(0,0,0,0.4); border-radius:16px; border:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; gap:10px; max-width:900px; margin-inline:auto; }
+.topbar-title { font-family:'Cinzel',serif; font-size:1.6rem; background:linear-gradient(135deg,#ffd966,#c49a00); -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:2px; }
+.player-badge { display:inline-flex; align-items:center; gap:10px; background:rgba(0,0,0,0.4); padding:8px 20px; border-radius:40px; font-size:1rem; }
+
+/* SCOREBOARD */
+.scoreboard { max-width:900px; margin:0 auto 20px; background:linear-gradient(145deg,rgba(26,31,46,0.9),rgba(10,15,28,0.95)); border:1px solid rgba(255,215,0,0.12); border-radius:20px; padding:20px 28px; box-shadow:0 16px 40px rgba(0,0,0,0.4); }
+.score-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+.score-item .score-label { font-size:0.75rem; color:rgba(255,255,255,0.4); font-family:'Inter',sans-serif; margin-bottom:4px; }
+.stat-number { font-size:2.2rem; font-weight:700; background:linear-gradient(135deg,#ffd966,#ffb347); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.highscore-glory { color:#ffd966; text-shadow:0 0 8px #ffaa00; font-weight:bold; }
+
+/* PUZZLE SELECT */
+.puzzle-selector { max-width:900px; margin:0 auto 24px; background:rgba(0,0,0,0.3); border-radius:18px; padding:18px 22px; border:1px solid rgba(255,255,255,0.07); }
+.puzzle-selector h3 { font-family:'Cinzel',serif; color:var(--gold); font-size:1.1rem; margin-bottom:14px; }
+.puzzle-btns { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+.puzzle-btn { padding:10px 20px; border-radius:30px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#ffe8e8; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; transition:all 0.2s; }
+.puzzle-btn:hover,.puzzle-btn.active { background:linear-gradient(135deg,#1a6b1a,#0d4d0d); border-color:rgba(0,200,0,0.4); transform:translateY(-2px); box-shadow:0 4px 15px rgba(0,130,0,0.3); }
+.puzzle-btn.solved { border-color:rgba(255,215,0,0.5); color:var(--gold); }
+.puzzle-btn.solved::after { content:'✓'; margin-left:4px; }
+
+/* TIMER */
+.timer-bar { max-width:900px; margin:0 auto 16px; display:flex; justify-content:center; gap:30px; flex-wrap:wrap; }
+.timer-item { display:flex; flex-direction:column; align-items:center; }
+.timer-label { font-size:0.7rem; color:rgba(255,255,255,0.4); font-family:'Inter',sans-serif; }
+.timer-val { font-size:1.4rem; font-weight:700; font-family:'Cinzel',serif; color:var(--gold); }
+
+/* HINT */
+.hint-bar { max-width:900px; margin:0 auto 14px; }
+.hint-text { font-size:0.85rem; color:rgba(255,232,232,0.55); font-family:'Inter',sans-serif; padding:10px 18px; background:rgba(0,0,0,0.3); border-radius:30px; display:inline-block; }
+
+/* PLAY AREA */
+.play-area { max-width:900px; margin:0 auto 24px; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+@media(max-width:700px){ .play-area{grid-template-columns:1fr;} }
+.canvas-panel { background:linear-gradient(145deg,rgba(26,31,46,0.92),rgba(10,15,28,0.96)); border-radius:20px; padding:18px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 16px 35px rgba(0,0,0,0.5); }
+.canvas-panel h4 { font-family:'Cinzel',serif; color:var(--gold); font-size:0.95rem; margin-bottom:12px; letter-spacing:1px; }
+canvas { border-radius:12px; cursor:crosshair; display:block; width:100%; touch-action:none; }
+#target-canvas { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); }
+#play-canvas { background:rgba(10,14,25,0.7); border:1px solid rgba(255,255,255,0.1); }
+
+/* TRAY */
+.tray-panel { max-width:900px; margin:0 auto 20px; background:rgba(0,0,0,0.35); border-radius:18px; padding:18px 22px; border:1px solid rgba(255,255,255,0.07); }
+.tray-panel h4 { font-family:'Cinzel',serif; color:var(--gold); font-size:0.9rem; margin-bottom:12px; }
+.tray-row { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; align-items:center; }
+.tray-piece-wrap { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.tray-piece-wrap canvas { border-radius:8px; cursor:grab; border:2px solid transparent; transition:border-color 0.2s,transform 0.2s; }
+.tray-piece-wrap canvas:hover { transform:scale(1.08); border-color:rgba(255,215,0,0.4); }
+.tray-piece-wrap canvas.placed { opacity:0.3; cursor:default; filter:grayscale(1); }
+.tray-piece-wrap canvas.selected-piece { border-color:rgba(0,255,136,0.7); box-shadow:0 0 14px rgba(0,255,136,0.4); transform:scale(1.1); }
+.piece-label { font-size:0.7rem; color:rgba(255,255,255,0.4); font-family:'Inter',sans-serif; }
+
+/* CONTROLS */
+.game-controls { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; max-width:900px; margin:0 auto 20px; }
+.ctrl-btn { padding:10px 22px; border-radius:30px; border:none; font-family:'Inter',sans-serif; font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.2s; }
+.ctrl-btn.primary { background:linear-gradient(135deg,#1a6b1a,#0d4d0d); color:#fff; box-shadow:0 4px 14px rgba(0,130,0,0.3); }
+.ctrl-btn.primary:hover { transform:translateY(-2px); }
+.ctrl-btn.secondary { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#ffe8e8; }
+.ctrl-btn.secondary:hover { background:rgba(255,255,255,0.14); transform:translateY(-1px); }
+.ctrl-btn.info { background:rgba(52,152,219,0.25); border:1px solid rgba(52,152,219,0.4); color:#90d0ff; }
+.ctrl-btn.info:hover { background:rgba(52,152,219,0.4); }
+
+/* RESULT */
+#result-overlay { display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.85); backdrop-filter:blur(14px); align-items:center; justify-content:center; }
+#result-overlay.show { display:flex; }
+.result-box { background:linear-gradient(145deg,rgba(26,31,46,0.98),rgba(10,15,28,0.99)); border:1px solid rgba(255,215,0,0.3); border-radius:28px; padding:50px 40px; text-align:center; max-width:420px; width:90%; animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes popIn { from{opacity:0;transform:scale(0.7)}to{opacity:1;transform:scale(1)} }
+.result-emoji { font-size:5rem; display:block; margin-bottom:16px; animation:bounce 0.6s ease; }
+@keyframes bounce { 0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)} }
+.result-title { font-family:'Cinzel',serif; font-size:2rem; margin-bottom:8px; background:linear-gradient(135deg,#ffd966,#c49a00); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.result-sub { font-size:0.95rem; color:rgba(255,232,232,0.6); margin-bottom:24px; font-family:'Inter',sans-serif; }
+.new-hs { background:linear-gradient(135deg,#ffd966,#ffaa00); color:#111; padding:8px 20px; border-radius:30px; font-weight:700; font-size:0.9rem; display:inline-block; margin-bottom:20px; animation:glowPulse 1s ease infinite alternate; }
+@keyframes glowPulse { from{box-shadow:0 0 8px rgba(255,180,0,0.5)}to{box-shadow:0 0 20px rgba(255,180,0,0.9)} }
+
+/* INSTRUCTIONS */
+.instructions { max-width:900px; margin:0 auto 30px; background:rgba(0,0,0,0.3); border-radius:16px; padding:20px 24px; border:1px solid rgba(255,255,255,0.07); }
+.instructions h4 { font-family:'Cinzel',serif; color:var(--gold); margin-bottom:12px; font-size:1rem; }
+.instructions ul { list-style:none; padding:0; }
+.instructions ul li { font-size:0.82rem; color:rgba(255,232,232,0.65); padding:4px 0; font-family:'Inter',sans-serif; }
+.instructions ul li::before { content:'◆ '; color:var(--gold); }
+.snap-flash { animation:snapFlash 0.4s ease; }
+@keyframes snapFlash { 0%{box-shadow:0 0 0 rgba(0,255,136,0)}50%{box-shadow:0 0 30px rgba(0,255,136,0.6)}100%{box-shadow:0 0 0 rgba(0,255,136,0)} }
+</style>
+</head>
+<body>
+
+<!-- RESULT -->
+<div id="result-overlay">
+  <div class="result-box">
+    <span class="result-emoji" id="res-emoji">🎉</span>
+    <div class="result-title" id="res-title">Solved!</div>
+    <p class="result-sub" id="res-sub">Well done!</p>
+    <div id="res-hs" class="new-hs" style="display:none">🏅 New High Score!</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px">
+      <button class="ctrl-btn primary" onclick="nextPuzzle()">Next Puzzle</button>
+      <button class="ctrl-btn secondary" onclick="document.getElementById('result-overlay').classList.remove('show')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game-wrapper">
+  <div class="topbar">
+    <span class="topbar-title">◆ TANGRAMS</span>
+    <span class="player-badge">👤 Guest Player</span>
+  </div>
+
+  <div class="scoreboard">
+    <div class="score-row">
+      <div class="score-item"><div class="score-label">SOLVED</div><div class="stat-number" id="st-solved">0</div></div>
+      <div class="score-item"><div class="score-label">BEST TIME</div><div class="stat-number highscore-glory" id="st-best">—</div></div>
+      <div class="score-item"><div class="score-label">HIGH SCORE</div><div class="stat-number highscore-glory" id="st-hs">0</div></div>
+      <div class="score-item"><div class="score-label">HINTS USED</div><div class="stat-number" id="st-hints">0</div></div>
+    </div>
+  </div>
+
+  <div class="puzzle-selector">
+    <h3>Choose Puzzle</h3>
+    <div class="puzzle-btns" id="puzzle-btns"></div>
+  </div>
+
+  <div class="timer-bar">
+    <div class="timer-item"><div class="timer-label">TIME</div><div class="timer-val" id="timer-disp">0:00</div></div>
+    <div class="timer-item"><div class="timer-label">PIECES LEFT</div><div class="timer-val" id="pieces-left">7</div></div>
+    <div class="timer-item"><div class="timer-label">PUZZLE</div><div class="timer-val" id="puzzle-name-disp">—</div></div>
+  </div>
+
+  <div class="hint-bar"><div class="hint-text" id="hint-text">💡 Select a piece from the tray, then drag it onto the board. Right-click to rotate, double-click to flip.</div></div>
+
+  <div class="play-area">
+    <div class="canvas-panel">
+      <h4>🎯 TARGET SHAPE</h4>
+      <canvas id="target-canvas" width="300" height="300"></canvas>
+    </div>
+    <div class="canvas-panel">
+      <h4>🎮 YOUR BOARD</h4>
+      <canvas id="play-canvas" width="300" height="300"></canvas>
+    </div>
+  </div>
+
+  <div class="tray-panel">
+    <h4>🧩 PIECES TRAY — Click to select, then place on board</h4>
+    <div class="tray-row" id="tray-row"></div>
+  </div>
+
+  <div class="game-controls">
+    <button class="ctrl-btn primary" onclick="resetPuzzle()">↺ Reset</button>
+    <button class="ctrl-btn info" onclick="rotateSelected()">↻ Rotate (R)</button>
+    <button class="ctrl-btn info" onclick="flipSelected()">⟺ Flip (F)</button>
+    <button class="ctrl-btn secondary" onclick="useHint()">💡 Hint</button>
+    <button class="ctrl-btn secondary" onclick="nextPuzzle()">⏭ Next Puzzle</button>
+  </div>
+
+  <div class="instructions">
+    <h4>How to Play Tangrams</h4>
+    <ul>
+      <li>Select a piece from the tray by clicking it (it will glow green).</li>
+      <li>Click on the board to place it, or drag it directly from the tray.</li>
+      <li>Press R or click Rotate to rotate the selected piece by 45°.</li>
+      <li>Press F or click Flip to mirror the selected piece.</li>
+      <li>Right-click a placed piece to pick it back up.</li>
+      <li>Fit all 7 pieces into the target silhouette outline to solve.</li>
+      <li>Stats are saved locally — no login needed!</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════
+   STATS — localStorage, no login
+════════════════════════════════════════════════════ */
+const STATS_KEY = 'tangrams_stats_v1';
+function loadStats() { try{return JSON.parse(localStorage.getItem(STATS_KEY))||{solved:0,highScore:0,bestTime:null,hintsUsed:0,solvedPuzzles:[]};}catch(e){return{solved:0,highScore:0,bestTime:null,hintsUsed:0,solvedPuzzles:[]};} }
+function saveStats(s) { localStorage.setItem(STATS_KEY,JSON.stringify(s)); }
+function refreshStats() {
+    const s=loadStats();
+    document.getElementById('st-solved').textContent=s.solved;
+    document.getElementById('st-hs').textContent=s.highScore;
+    document.getElementById('st-hints').textContent=s.hintsUsed||0;
+    document.getElementById('st-best').textContent=s.bestTime?formatTime(s.bestTime):'—';
+}
+
+/* ════════════════════════════════════════════════════
+   TANGRAM DEFINITIONS
+════════════════════════════════════════════════════ */
+const U=40, CW=300, CH=300;
+
+const PIECES = [
+    {id:0,name:'Large Tri 1', color:'#e74c3c', pts:[[0,0],[4,0],[0,4]]},
+    {id:1,name:'Large Tri 2', color:'#e67e22', pts:[[0,0],[4,0],[4,4]]},
+    {id:2,name:'Med Tri',     color:'#f1c40f', pts:[[0,0],[2,2],[0,4]]},
+    {id:3,name:'Sm Tri 1',    color:'#2ecc71', pts:[[0,0],[2,0],[0,2]]},
+    {id:4,name:'Sm Tri 2',    color:'#3498db', pts:[[0,0],[2,0],[2,2]]},
+    {id:5,name:'Square',      color:'#9b59b6', pts:[[0,0],[2,0],[2,2],[0,2]]},
+    {id:6,name:'Parallelogram',color:'#1abc9c',pts:[[1,0],[3,0],[2,2],[0,2]]}
+];
+
+const PUZZLES = [
+    {name:'Cat',emoji:'🐱',solution:[{pieceId:0,x:0,y:0,rot:0,flip:false},{pieceId:1,x:4,y:0,rot:180,flip:false},{pieceId:2,x:0,y:4,rot:0,flip:false},{pieceId:3,x:2,y:4,rot:0,flip:false},{pieceId:4,x:2,y:5,rot:90,flip:false},{pieceId:5,x:4,y:4,rot:0,flip:false},{pieceId:6,x:4,y:5,rot:0,flip:false}]},
+    {name:'House',emoji:'🏠',solution:[{pieceId:0,x:1,y:0,rot:90,flip:false},{pieceId:1,x:3,y:0,rot:270,flip:false},{pieceId:2,x:2,y:2,rot:0,flip:false},{pieceId:3,x:0,y:3,rot:0,flip:false},{pieceId:4,x:4,y:3,rot:90,flip:false},{pieceId:5,x:2,y:3,rot:0,flip:false},{pieceId:6,x:1,y:4,rot:0,flip:false}]},
+    {name:'Swan',emoji:'🦢',solution:[{pieceId:0,x:0,y:0,rot:45,flip:false},{pieceId:1,x:3,y:1,rot:135,flip:false},{pieceId:2,x:1,y:3,rot:0,flip:false},{pieceId:3,x:3,y:3,rot:90,flip:false},{pieceId:4,x:1,y:5,rot:0,flip:false},{pieceId:5,x:3,y:5,rot:0,flip:false},{pieceId:6,x:1,y:4,rot:45,flip:false}]},
+    {name:'Boat',emoji:'⛵',solution:[{pieceId:0,x:0,y:0,rot:0,flip:false},{pieceId:1,x:4,y:0,rot:90,flip:true},{pieceId:2,x:2,y:2,rot:180,flip:false},{pieceId:3,x:0,y:4,rot:0,flip:false},{pieceId:4,x:2,y:4,rot:0,flip:false},{pieceId:5,x:4,y:4,rot:0,flip:false},{pieceId:6,x:1,y:4,rot:0,flip:true}]},
+    {name:'Fox',emoji:'🦊',solution:[{pieceId:0,x:1,y:0,rot:0,flip:false},{pieceId:1,x:3,y:0,rot:90,flip:false},{pieceId:2,x:0,y:3,rot:270,flip:false},{pieceId:3,x:2,y:2,rot:180,flip:false},{pieceId:4,x:4,y:3,rot:0,flip:false},{pieceId:5,x:2,y:4,rot:0,flip:false},{pieceId:6,x:0,y:4,rot:90,flip:true}]},
+    {name:'Rocket',emoji:'🚀',solution:[{pieceId:0,x:1,y:0,rot:270,flip:false},{pieceId:1,x:3,y:0,rot:180,flip:false},{pieceId:2,x:2,y:2,rot:90,flip:false},{pieceId:3,x:0,y:4,rot:0,flip:false},{pieceId:4,x:4,y:3,rot:270,flip:false},{pieceId:5,x:2,y:4,rot:45,flip:false},{pieceId:6,x:1,y:5,rot:0,flip:false}]},
+    {name:'Fish',emoji:'🐟',solution:[{pieceId:0,x:0,y:1,rot:90,flip:false},{pieceId:1,x:2,y:1,rot:270,flip:false},{pieceId:2,x:4,y:0,rot:0,flip:false},{pieceId:3,x:0,y:3,rot:0,flip:false},{pieceId:4,x:2,y:4,rot:90,flip:false},{pieceId:5,x:4,y:3,rot:0,flip:false},{pieceId:6,x:3,y:4,rot:0,flip:false}]},
+    {name:'Star',emoji:'⭐',solution:[{pieceId:0,x:2,y:0,rot:0,flip:false},{pieceId:1,x:2,y:0,rot:90,flip:false},{pieceId:2,x:0,y:2,rot:0,flip:false},{pieceId:3,x:4,y:2,rot:90,flip:false},{pieceId:4,x:0,y:4,rot:270,flip:false},{pieceId:5,x:3,y:3,rot:0,flip:false},{pieceId:6,x:1,y:4,rot:180,flip:false}]}
+];
+
+/* ════════════════════════════════════════════════════
+   GAME STATE
+════════════════════════════════════════════════════ */
+let currentPuzzleIdx=0, placedPieces=[], selectedPieceId=null;
+let selectedRot=0, selectedFlip=false;
+let timerInterval=null, timerSeconds=0, puzzleStarted=false;
+let isDragging=false;
+
+const targetCanvas=document.getElementById('target-canvas');
+const playCanvas=document.getElementById('play-canvas');
+const tctx=targetCanvas.getContext('2d');
+const pctx=playCanvas.getContext('2d');
+
+function formatTime(s){ return Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60; }
+
+/* ════════════════════════════════════════════════════
+   DRAWING
+════════════════════════════════════════════════════ */
+function transformPts(pts,rot,flip,scale){
+    scale=scale||U;
+    let tpts=pts.map(([x,y])=>[x*scale,y*scale]);
+    let cx=0,cy=0; tpts.forEach(([x,y])=>{cx+=x;cy+=y;}); cx/=tpts.length; cy/=tpts.length;
+    const rad=rot*Math.PI/180;
+    tpts=tpts.map(([x,y])=>{const dx=x-cx,dy=y-cy;return[cx+dx*Math.cos(rad)-dy*Math.sin(rad),cy+dx*Math.sin(rad)+dy*Math.cos(rad)];});
+    if(flip){tpts=tpts.map(([x,y])=>[2*cx-x,y]);}
+    let nx=Infinity,ny=Infinity; tpts.forEach(([x,y])=>{if(x<nx)nx=x;if(y<ny)ny=y;});
+    return tpts.map(([x,y])=>[x-nx,y-ny]);
+}
+
+function drawPieceOnCtx(ctx,pts,color,ox,oy,alpha){
+    ctx.save(); ctx.globalAlpha=alpha||1;
+    ctx.beginPath(); ctx.moveTo(pts[0][0]+ox,pts[0][1]+oy);
+    pts.slice(1).forEach(([x,y])=>ctx.lineTo(x+ox,y+oy));
+    ctx.closePath(); ctx.fillStyle=color; ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,0.35)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.restore();
+}
+
+function drawTarget(){
+    tctx.clearRect(0,0,CW,CH);
+    tctx.fillStyle='rgba(255,255,255,0.04)'; tctx.fillRect(0,0,CW,CH);
+    const pz=PUZZLES[currentPuzzleIdx];
+    const offX=30,offY=30;
+    pz.solution.forEach(sp=>{
+        const pc=PIECES[sp.pieceId];
+        const tpts=transformPts(pc.pts,sp.rot,sp.flip,U*0.85);
+        const px=sp.x*U*0.85+offX, py=sp.y*U*0.85+offY;
+        tctx.beginPath(); tctx.moveTo(tpts[0][0]+px,tpts[0][1]+py);
+        tpts.slice(1).forEach(([x,y])=>tctx.lineTo(x+px,y+py));
+        tctx.closePath();
+        tctx.fillStyle='rgba(255,255,255,0.12)'; tctx.fill();
+        tctx.strokeStyle='rgba(255,215,0,0.4)'; tctx.lineWidth=1; tctx.stroke();
+    });
+    tctx.font='bold 13px Cinzel,serif'; tctx.fillStyle='rgba(255,215,0,0.7)';
+    tctx.textAlign='center'; tctx.fillText(pz.emoji+' '+pz.name,CW/2,CH-10);
+}
+
+function drawBoard(dragInfo){
+    pctx.clearRect(0,0,CW,CH);
+    pctx.fillStyle='rgba(10,14,25,0.7)'; pctx.fillRect(0,0,CW,CH);
+    pctx.fillStyle='rgba(255,255,255,0.06)';
+    for(let gx=U;gx<CW;gx+=U) for(let gy=U;gy<CH;gy+=U){pctx.beginPath();pctx.arc(gx,gy,1.5,0,Math.PI*2);pctx.fill();}
+    placedPieces.forEach(pp=>{
+        const pc=PIECES[pp.pieceId];
+        const tpts=transformPts(pc.pts,pp.rot,pp.flip,U);
+        drawPieceOnCtx(pctx,tpts,pc.color,pp.x,pp.y,0.92);
+        let cx=0,cy=0; tpts.forEach(([x,y])=>{cx+=x;cy+=y;}); cx=cx/tpts.length+pp.x; cy=cy/tpts.length+pp.y;
+        pctx.font='bold 10px Inter,sans-serif'; pctx.fillStyle='rgba(255,255,255,0.7)';
+        pctx.textAlign='center'; pctx.fillText(pc.name.split(' ')[0],cx,cy+4);
+    });
+    if(dragInfo&&selectedPieceId!==null){
+        const pc=PIECES[selectedPieceId];
+        const tpts=transformPts(pc.pts,selectedRot,selectedFlip,U);
+        drawPieceOnCtx(pctx,tpts,pc.color,dragInfo.x,dragInfo.y,0.55);
+    }
+}
+
+/* ════════════════════════════════════════════════════
+   TRAY
+════════════════════════════════════════════════════ */
+function buildTray(){
+    const tray=document.getElementById('tray-row'); tray.innerHTML='';
+    PIECES.forEach(pc=>{
+        const isPlaced=placedPieces.some(p=>p.pieceId===pc.id);
+        const wrap=document.createElement('div'); wrap.className='tray-piece-wrap';
+        const cv=document.createElement('canvas'); cv.width=80; cv.height=80;
+        if(isPlaced) cv.classList.add('placed');
+        if(selectedPieceId===pc.id) cv.classList.add('selected-piece');
+        const ctx=cv.getContext('2d');
+        const pts=transformPts(pc.pts,selectedPieceId===pc.id?selectedRot:0,selectedPieceId===pc.id?selectedFlip:false,16);
+        let nx=Infinity,ny=Infinity,mx=-Infinity,my=-Infinity;
+        pts.forEach(([x,y])=>{if(x<nx)nx=x;if(y<ny)ny=y;if(x>mx)mx=x;if(y>my)my=y;});
+        const pw=mx-nx,ph=my-ny,sc=Math.min(60/Math.max(pw,ph,1));
+        const ox=(80-pw*sc)/2-nx*sc,oy=(80-ph*sc)/2-ny*sc;
+        const scaled=pts.map(([x,y])=>[x*sc+ox,y*sc+oy]);
+        ctx.clearRect(0,0,80,80); ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.fillRect(0,0,80,80);
+        drawPieceOnCtx(ctx,scaled,pc.color,0,0,isPlaced?0.3:1);
+        cv.addEventListener('click',()=>{if(!isPlaced)selectTrayPiece(pc.id);});
+        cv.addEventListener('mousedown',e=>startDrag(e,pc.id));
+        cv.addEventListener('touchstart',e=>startDragTouch(e,pc.id),{passive:false});
+        const lbl=document.createElement('div'); lbl.className='piece-label'; lbl.textContent=pc.name;
+        wrap.appendChild(cv); wrap.appendChild(lbl); tray.appendChild(wrap);
+    });
+}
+
+function selectTrayPiece(id){
+    if(placedPieces.some(p=>p.pieceId===id)) return;
+    selectedPieceId=selectedPieceId===id?null:id;
+    if(selectedPieceId!==null&&!puzzleStarted){startTimer();puzzleStarted=true;}
+    buildTray();
+    setHint(selectedPieceId!==null?`💡 ${PIECES[id].name} selected. Click on the board to place it. Press R to rotate, F to flip.`:'💡 Click a piece from the tray to select it.');
+}
+
+/* ════════════════════════════════════════════════════
+   PUZZLE MANAGEMENT
+════════════════════════════════════════════════════ */
+function buildPuzzleButtons(){
+    const s=loadStats();
+    const cont=document.getElementById('puzzle-btns'); cont.innerHTML='';
+    PUZZLES.forEach((pz,i)=>{
+        const btn=document.createElement('button');
+        btn.className='puzzle-btn'+(s.solvedPuzzles&&s.solvedPuzzles.includes(i)?' solved':'');
+        if(i===currentPuzzleIdx) btn.classList.add('active');
+        btn.innerHTML=pz.emoji+' '+pz.name;
+        btn.onclick=()=>loadPuzzle(i);
+        cont.appendChild(btn);
+    });
+}
+
+function loadPuzzle(idx){
+    currentPuzzleIdx=idx; placedPieces=[];
+    selectedPieceId=null; selectedRot=0; selectedFlip=false;
+    stopTimer(); timerSeconds=0; puzzleStarted=false;
+    document.getElementById('result-overlay').classList.remove('show');
+    document.getElementById('puzzle-name-disp').textContent=PUZZLES[idx].name;
+    document.getElementById('timer-disp').textContent='0:00';
+    document.querySelectorAll('.puzzle-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+    drawTarget(); buildTray(); drawBoard(); updatePiecesLeft();
+    setHint('💡 Select a piece from the tray, then click the board to place it.');
+}
+
+function nextPuzzle(){
+    document.getElementById('result-overlay').classList.remove('show');
+    loadPuzzle((currentPuzzleIdx+1)%PUZZLES.length);
+}
+function resetPuzzle(){ loadPuzzle(currentPuzzleIdx); }
+
+/* ════════════════════════════════════════════════════
+   DRAG & DROP
+════════════════════════════════════════════════════ */
+function getBoardRect(){ return playCanvas.getBoundingClientRect(); }
+
+function startDrag(e,pieceId){
+    if(placedPieces.some(p=>p.pieceId===pieceId)) return;
+    e.preventDefault(); selectedPieceId=pieceId; isDragging=true;
+    if(!puzzleStarted){startTimer();puzzleStarted=true;} buildTray();
+    const onMove=ev=>{const rect=getBoardRect();const cx=(ev.clientX-rect.left)*(CW/rect.width);const cy=(ev.clientY-rect.top)*(CH/rect.height);drawBoard({x:cx,y:cy});};
+    const onUp=ev=>{document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);isDragging=false;const rect=getBoardRect();const cx=(ev.clientX-rect.left)*(CW/rect.width);const cy=(ev.clientY-rect.top)*(CH/rect.height);if(cx>=0&&cx<=CW&&cy>=0&&cy<=CH){placePieceAt(cx,cy);}else{drawBoard();}};
+    document.addEventListener('mousemove',onMove); document.addEventListener('mouseup',onUp);
+}
+
+function startDragTouch(e,pieceId){
+    if(placedPieces.some(p=>p.pieceId===pieceId)) return;
+    e.preventDefault(); selectedPieceId=pieceId; isDragging=true;
+    if(!puzzleStarted){startTimer();puzzleStarted=true;} buildTray();
+    const onMove=ev=>{const t=ev.touches[0];const rect=getBoardRect();const cx=(t.clientX-rect.left)*(CW/rect.width);const cy=(t.clientY-rect.top)*(CH/rect.height);drawBoard({x:cx,y:cy});};
+    const onEnd=ev=>{document.removeEventListener('touchmove',onMove);document.removeEventListener('touchend',onEnd);isDragging=false;const t=ev.changedTouches[0];const rect=getBoardRect();const cx=(t.clientX-rect.left)*(CW/rect.width);const cy=(t.clientY-rect.top)*(CH/rect.height);if(cx>=0&&cx<=CW&&cy>=0&&cy<=CH){placePieceAt(cx,cy);}else{drawBoard();}};
+    document.addEventListener('touchmove',onMove,{passive:false}); document.addEventListener('touchend',onEnd);
+}
+
+/* ════════════════════════════════════════════════════
+   BOARD INTERACTION
+════════════════════════════════════════════════════ */
+playCanvas.addEventListener('click',e=>{
+    const rect=getBoardRect();
+    const cx=(e.clientX-rect.left)*(CW/rect.width);
+    const cy=(e.clientY-rect.top)*(CH/rect.height);
+    if(selectedPieceId!==null&&!placedPieces.some(p=>p.pieceId===selectedPieceId)) placePieceAt(cx,cy);
+});
+playCanvas.addEventListener('contextmenu',e=>{
+    e.preventDefault();
+    const rect=getBoardRect();
+    pickUpPieceAt((e.clientX-rect.left)*(CW/rect.width),(e.clientY-rect.top)*(CH/rect.height));
+});
+playCanvas.addEventListener('mousemove',e=>{
+    if(selectedPieceId===null) return;
+    const rect=getBoardRect();
+    drawBoard({x:(e.clientX-rect.left)*(CW/rect.width),y:(e.clientY-rect.top)*(CH/rect.height)});
+});
+playCanvas.addEventListener('mouseleave',()=>drawBoard());
+
+function placePieceAt(cx,cy){
+    if(selectedPieceId===null) return;
+    if(placedPieces.some(p=>p.pieceId===selectedPieceId)) return;
+    const px=Math.max(0,Math.min(CW-U,Math.round(cx/U)*U-U));
+    const py=Math.max(0,Math.min(CH-U,Math.round(cy/U)*U-U));
+    placedPieces.push({pieceId:selectedPieceId,x:px,y:py,rot:selectedRot,flip:selectedFlip});
+    playCanvas.classList.add('snap-flash'); setTimeout(()=>playCanvas.classList.remove('snap-flash'),400);
+    selectedPieceId=null; buildTray(); drawBoard(); updatePiecesLeft(); checkSolution();
+}
+
+function pickUpPieceAt(cx,cy){
+    for(let i=placedPieces.length-1;i>=0;i--){
+        const pp=placedPieces[i];
+        const tpts=transformPts(PIECES[pp.pieceId].pts,pp.rot,pp.flip,U);
+        if(pointInPoly(cx-pp.x,cy-pp.y,tpts)){
+            selectedPieceId=pp.pieceId; selectedRot=pp.rot; selectedFlip=pp.flip;
+            placedPieces.splice(i,1); buildTray(); drawBoard(); updatePiecesLeft();
+            setHint(`💡 Picked up ${PIECES[pp.pieceId].name}. Place it again or press R/F to transform.`);
+            return;
+        }
+    }
+}
+
+function pointInPoly(px,py,pts){
+    let inside=false;
+    for(let i=0,j=pts.length-1;i<pts.length;j=i++){
+        const xi=pts[i][0],yi=pts[i][1],xj=pts[j][0],yj=pts[j][1];
+        if(((yi>py)!==(yj>py))&&(px<(xj-xi)*(py-yi)/(yj-yi)+xi)) inside=!inside;
+    }
+    return inside;
+}
+
+/* ════════════════════════════════════════════════════
+   ROTATE / FLIP / KEYS
+════════════════════════════════════════════════════ */
+function rotateSelected(){ if(selectedPieceId===null){setHint('⚠ Select a piece from the tray first!');return;} selectedRot=(selectedRot+45)%360; buildTray(); drawBoard(); }
+function flipSelected(){ if(selectedPieceId===null){setHint('⚠ Select a piece from the tray first!');return;} selectedFlip=!selectedFlip; buildTray(); drawBoard(); }
+
+document.addEventListener('keydown',e=>{
+    if(e.key==='r'||e.key==='R') rotateSelected();
+    if(e.key==='f'||e.key==='F') flipSelected();
+    if(e.key==='Escape'){selectedPieceId=null;buildTray();drawBoard();}
+});
+
+/* ════════════════════════════════════════════════════
+   SOLUTION CHECK
+════════════════════════════════════════════════════ */
+function checkSolution(){
+    if(placedPieces.length<7) return;
+    stopTimer();
+    const t=timerSeconds;
+    const s=loadStats();
+    const wasNew=!s.solvedPuzzles.includes(currentPuzzleIdx);
+    if(wasNew){ s.solved=(s.solved||0)+1; s.solvedPuzzles=s.solvedPuzzles||[]; s.solvedPuzzles.push(currentPuzzleIdx); s.highScore=s.solved; }
+    const prevBest=s.bestTime;
+    if(!s.bestTime||t<s.bestTime) s.bestTime=t;
+    saveStats(s); refreshStats(); buildPuzzleButtons();
+    document.getElementById('res-emoji').textContent='🎉';
+    document.getElementById('res-title').textContent='Solved!';
+    document.getElementById('res-sub').textContent=`You completed "${PUZZLES[currentPuzzleIdx].name}" in ${formatTime(t)}!`;
+    document.getElementById('res-hs').style.display=(wasNew&&s.solved>=(prevBest||0))?'inline-block':'none';
+    document.getElementById('result-overlay').classList.add('show');
+    setHint('🎉 Puzzle solved! Choose another or try to beat your best time.');
+}
+
+/* ════════════════════════════════════════════════════
+   TIMER
+════════════════════════════════════════════════════ */
+function startTimer(){ stopTimer(); timerSeconds=0; timerInterval=setInterval(()=>{timerSeconds++;document.getElementById('timer-disp').textContent=formatTime(timerSeconds);},1000); }
+function stopTimer(){ if(timerInterval){clearInterval(timerInterval);timerInterval=null;} }
+
+/* ════════════════════════════════════════════════════
+   HINTS
+════════════════════════════════════════════════════ */
+let hintIdx=0;
+const HINTS=['Tip: Large triangles cover the most area — place them first.','Tip: The parallelogram is the trickiest. Try flipping it.','Tip: Right-click a placed piece to pick it back up.','Tip: Pieces can be rotated in 45° increments.','Tip: The small square fits neatly in corners.','Tip: Try matching the outer edges of the silhouette first.'];
+function useHint(){
+    setHint('💡 '+HINTS[hintIdx%HINTS.length]); hintIdx++;
+    const s=loadStats(); s.hintsUsed=(s.hintsUsed||0)+1; saveStats(s); refreshStats();
+}
+function setHint(t){ document.getElementById('hint-text').textContent=t; }
+function updatePiecesLeft(){ document.getElementById('pieces-left').textContent=7-placedPieces.length; }
+
+/* ════════════════════════════════════════════════════
+   INIT — start directly, no login
+════════════════════════════════════════════════════ */
+refreshStats();
+buildPuzzleButtons();
+loadPuzzle(0);
+</script>
+</body>
+</html>

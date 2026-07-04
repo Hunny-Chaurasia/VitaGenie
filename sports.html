@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Sports Arena | Dynamic Sports Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080c10;--bg2:#0d1117;--card-bg:#0f1318;--border:#1e2530;
+  --accent:#00d4ff;--accent2:#ff6b35;--indoor:#00d4ff;--outdoor:#39ff14;
+  --text:#e8edf2;--muted:#6b7a8d;--panel:rgba(13,17,23,0.96);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'DM Sans',system-ui,sans-serif;line-height:1.55;min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 80% 40% at 20% 0%,rgba(0,212,255,0.05) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%,rgba(255,107,53,0.04) 0%,transparent 55%);
+}
+.app-header{
+  background:linear-gradient(135deg,#080c10 0%,#0d1420 100%);
+  border-bottom:1px solid var(--border);
+  padding:2rem 2.5rem 1.5rem;position:relative;overflow:hidden;
+}
+.app-header::before{
+  content:'';position:absolute;top:-60px;left:-60px;
+  width:300px;height:300px;
+  background:radial-gradient(circle,rgba(0,212,255,0.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.header-top{display:flex;align-items:flex-end;gap:1.5rem;flex-wrap:wrap}
+.app-header h1{
+  font-family:'Oswald',sans-serif;font-size:2.8rem;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;
+  background:linear-gradient(120deg,#00d4ff,#ffffff 60%,#ff6b35);
+  -webkit-background-clip:text;background-clip:text;color:transparent;line-height:1;
+}
+.header-badge{
+  background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.25);
+  color:var(--accent);font-size:0.68rem;letter-spacing:2px;
+  text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:4px;
+  display:inline-block;
+}
+.app-header p{color:var(--muted);font-size:0.88rem;margin-top:0.5rem}
+.control-bar{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:1.2rem 2.5rem;display:flex;gap:1.2rem;align-items:center;
+  flex-wrap:wrap;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);
+}
+.search-wrap{position:relative;flex:1;min-width:220px;max-width:480px}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--muted);pointer-events:none}
+#searchInput{
+  width:100%;background:#111720;border:1px solid var(--border);
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;
+  padding:0.65rem 1rem 0.65rem 2.6rem;border-radius:40px;outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+#searchInput:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,0.12)}
+#searchInput::placeholder{color:var(--muted)}
+#suggestions{
+  position:absolute;top:calc(100% + 6px);left:0;right:0;
+  background:#111720;border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;z-index:999;display:none;
+  box-shadow:0 12px 30px rgba(0,0,0,.5);max-height:280px;overflow-y:auto;
+}
+.suggestion-item{
+  padding:.65rem 1.2rem;font-size:.88rem;cursor:pointer;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid #1a2030;transition:background .15s;
+}
+.suggestion-item:last-child{border-bottom:none}
+.suggestion-item:hover{background:#1a2535}
+.suggestion-item .sug-icon{font-size:1.1rem}
+.suggestion-item .sug-name{flex:1;font-weight:500}
+.suggestion-item .sug-type{font-size:.68rem;padding:2px 8px;border-radius:10px;letter-spacing:.5px}
+.sug-type.indoor{background:rgba(0,212,255,.12);color:var(--indoor)}
+.sug-type.outdoor{background:rgba(57,255,20,.12);color:var(--outdoor)}
+.filter-btns{display:flex;gap:.6rem}
+.filter-btn{
+  font-family:'Oswald',sans-serif;font-size:.78rem;letter-spacing:1.5px;
+  text-transform:uppercase;padding:.5rem 1.3rem;border-radius:30px;
+  border:1px solid var(--border);background:transparent;color:var(--muted);
+  cursor:pointer;transition:all .2s;
+}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+.filter-btn.active-all{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.2);color:var(--text)}
+.filter-btn.active-indoor{background:rgba(0,212,255,.12);border-color:var(--indoor);color:var(--indoor)}
+.filter-btn.active-outdoor{background:rgba(57,255,20,.12);border-color:var(--outdoor);color:var(--outdoor)}
+.result-count{font-size:.78rem;color:var(--muted);margin-left:auto;white-space:nowrap}
+.alpha-section{padding:0 2.5rem;margin-top:2rem}
+.alpha-heading{
+  font-family:'Oswald',sans-serif;font-size:2.2rem;font-weight:700;
+  letter-spacing:3px;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.12);
+  display:inline-block;position:relative;margin-bottom:.8rem;
+}
+.alpha-heading::after{
+  content:attr(data-letter);position:absolute;left:0;top:0;
+  font-size:2.2rem;
+  background:linear-gradient(120deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  clip-path:inset(0 60% 0 0);transition:clip-path .4s ease;
+}
+.alpha-section:hover .alpha-heading::after{clip-path:inset(0 0% 0 0)}
+.alpha-divider{height:1px;background:linear-gradient(90deg,var(--border) 0%,transparent 80%);margin-bottom:1.4rem}
+.sport-grid{display:flex;flex-wrap:wrap;gap:1.4rem;padding-bottom:2rem}
+.sport-card{
+  background:var(--card-bg);border:1px solid var(--border);border-radius:24px;
+  width:300px;overflow:hidden;
+  transition:transform .25s cubic-bezier(.22,.68,0,1.2),border-color .2s,box-shadow .25s;
+  display:flex;flex-direction:column;cursor:pointer;position:relative;
+}
+.sport-card::before{
+  content:'';position:absolute;inset:0;border-radius:24px;
+  opacity:0;transition:opacity .25s;pointer-events:none;
+}
+.sport-card.indoor-card::before{background:radial-gradient(ellipse at top,rgba(0,212,255,.06) 0%,transparent 70%)}
+.sport-card.outdoor-card::before{background:radial-gradient(ellipse at top,rgba(57,255,20,.06) 0%,transparent 70%)}
+.sport-card:hover{transform:translateY(-8px) scale(1.01);box-shadow:0 24px 40px -16px rgba(0,0,0,.7)}
+.sport-card.indoor-card:hover{border-color:var(--indoor)}
+.sport-card.outdoor-card:hover{border-color:var(--outdoor)}
+.sport-card:hover::before{opacity:1}
+.card-media{position:relative;height:170px;overflow:hidden;background:#111820}
+.card-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
+.sport-card:hover .card-media img{transform:scale(1.06)}
+.media-placeholder{
+  width:100%;height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#0d1420,#111c28);gap:.5rem;
+}
+.media-placeholder .sport-emoji{font-size:3.5rem}
+.media-placeholder span{font-size:.7rem;color:var(--muted)}
+.type-badge{
+  position:absolute;top:10px;right:10px;
+  font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:1.5px;
+  text-transform:uppercase;padding:3px 10px;border-radius:20px;backdrop-filter:blur(6px);
+}
+.type-badge.indoor{background:rgba(0,212,255,.18);border:1px solid rgba(0,212,255,.4);color:var(--indoor)}
+.type-badge.outdoor{background:rgba(57,255,20,.15);border:1px solid rgba(57,255,20,.35);color:var(--outdoor)}
+.card-content{padding:1rem 1.2rem 1.2rem;flex:1;display:flex;flex-direction:column}
+.sport-name{
+  font-family:'Oswald',sans-serif;font-size:1.25rem;font-weight:600;
+  letter-spacing:.5px;text-transform:uppercase;color:var(--text);
+  margin-bottom:.5rem;line-height:1.2;
+}
+.sport-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.7rem}
+.meta-chip{font-size:.68rem;background:#1a2030;border:1px solid #1e2840;padding:2px 9px;border-radius:20px;color:#8a9bb5}
+.sport-desc{font-size:.78rem;color:var(--muted);line-height:1.5;flex:1;margin-bottom:1rem}
+.enter-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:transparent;border:1px solid var(--border);color:var(--muted);
+  font-family:'Oswald',sans-serif;font-size:.75rem;letter-spacing:1.5px;
+  text-transform:uppercase;padding:.55rem 1rem;border-radius:30px;
+  cursor:pointer;transition:all .2s;width:100%;
+}
+.indoor-card .enter-btn:hover{background:rgba(0,212,255,.1);border-color:var(--indoor);color:var(--indoor)}
+.outdoor-card .enter-btn:hover{background:rgba(57,255,20,.1);border-color:var(--outdoor);color:var(--outdoor)}
+#noResult{display:none;text-align:center;padding:5rem 2rem;flex-direction:column;align-items:center;gap:1rem}
+.no-result-emoji{font-size:4rem}
+#noResult h3{font-family:'Oswald',sans-serif;font-size:1.5rem;letter-spacing:2px}
+#noResult p{color:var(--muted);font-size:.88rem}
+#loading_msg{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6rem 2rem;gap:1.2rem;text-align:center}
+.spinner{width:48px;height:48px;border:3px solid #1e2530;border-top:3px solid var(--accent);border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-label{color:var(--muted);font-size:.9rem}
+.loading-sub{font-size:.72rem;color:#3a4a5a;word-break:break-all;max-width:600px}
+#error_msg{background:#120d0d;border-left:4px solid #ff4444;max-width:700px;margin:3rem auto;padding:2rem;border-radius:20px;text-align:center;display:none}
+.retry-btn{
+  background:var(--accent);border:none;color:#060a0e;
+  font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;padding:.65rem 1.8rem;border-radius:40px;
+  margin-top:1.2rem;cursor:pointer;font-size:.82rem;transition:.15s;
+}
+.retry-btn:hover{opacity:.85;transform:scale(.97)}
+#sport_modal{
+  display:none;position:fixed;inset:0;background:rgba(4,8,14,.94);
+  backdrop-filter:blur(10px);z-index:10000;
+  align-items:flex-start;justify-content:center;padding:1.5rem 1rem;overflow-y:auto;
+}
+.modal_inner{
+  max-width:740px;width:100%;background:#0d1117;
+  border:1px solid #1e2940;border-radius:32px;
+  padding:2rem 2.2rem 2.5rem;position:relative;
+  box-shadow:0 30px 60px rgba(0,0,0,.7);margin:auto;
+  animation:modalIn .25s cubic-bezier(.22,.68,0,1.15);
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+#close_modal_btn{
+  position:sticky;top:0;float:right;
+  background:#1a2030;border:1px solid #2a3545;color:#9aa;
+  padding:5px 16px;border-radius:30px;font-size:.8rem;
+  font-family:'DM Sans',sans-serif;cursor:pointer;transition:.15s;
+  margin-bottom:1rem;z-index:10;
+}
+#close_modal_btn:hover{background:var(--accent);color:#060a0e;border-color:var(--accent)}
+.modal-sport-img{width:100%;max-height:260px;object-fit:cover;border-radius:20px;margin-bottom:1.2rem;background:#111820;display:block}
+.modal-sport-title{font-family:'Oswald',sans-serif;font-size:2rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:.4rem}
+.modal-meta{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.section-block{margin-bottom:1.4rem;padding:1rem 1.1rem;background:#0a0e14;border:1px solid #1a2030;border-radius:16px}
+.section-block-title{
+  font-family:'Oswald',sans-serif;font-size:.82rem;letter-spacing:2px;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.7rem;
+  display:flex;align-items:center;gap:8px;
+}
+.section-block-title.orange{color:var(--accent2)}
+.section-block-title.green{color:var(--outdoor)}
+.info-row{display:flex;gap:6px;margin-bottom:.4rem;font-size:.84rem;color:#bcc8d4}
+.info-label{color:var(--muted);min-width:120px;flex-shrink:0}
+.tag-list{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:.72rem;background:#141c28;border:1px solid #1e2a3a;padding:3px 10px;border-radius:20px;color:#8a9bb5}
+ul.modal-list{padding-left:1.2rem;margin-top:.3rem}
+ul.modal-list li{font-size:.85rem;color:#bcc8d4;margin-bottom:.4rem;line-height:1.5}
+.tabs-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.4rem;border-bottom:1px solid var(--border);padding-bottom:.8rem}
+.tab-btn{
+  font-family:'Oswald',sans-serif;font-size:.72rem;letter-spacing:1px;
+  text-transform:uppercase;padding:4px 14px;border-radius:20px;
+  border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;transition:.15s;
+}
+.tab-btn.active,.tab-btn:hover{background:rgba(0,212,255,.1);border-color:var(--accent);color:var(--accent)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+@media(max-width:700px){
+  .app-header{padding:1.5rem 1.2rem}
+  .app-header h1{font-size:2rem}
+  .control-bar{padding:1rem 1.2rem;gap:.8rem}
+  .alpha-section{padding:0 1.2rem}
+  .sport-card{width:280px}
+  .modal_inner{padding:1.4rem 1.2rem 2rem}
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="header-top">
+    <div>
+      <span class="header-badge">🏟 LIVE XML DATA</span>
+      <h1>⚡ SPORTS ARENA</h1>
+      <p>Complete sports encyclopedia · Dynamically loaded from GitHub XML · Tap any card to explore</p>
+    </div>
+  </div>
+</div>
+
+<div class="control-bar">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search sports (e.g. Chess, Swimming…)" autocomplete="off" spellcheck="false">
+    <div id="suggestions"></div>
+  </div>
+  <div class="filter-btns">
+    <button class="filter-btn active-all" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="indoor">🏠 Indoor</button>
+    <button class="filter-btn" data-filter="outdoor">🌿 Outdoor</button>
+  </div>
+  <div class="result-count" id="resultCount"></div>
+</div>
+
+<div id="loading_msg">
+  <div class="spinner"></div>
+  <div class="loading-label">Fetching sports from GitHub XML…</div>
+  <div class="loading-sub">https://raw.githubusercontent.com/Hunny-Chaurasia/-myHealthyFitness/main/sports.xml</div>
+</div>
+
+<div id="error_msg"></div>
+<div id="noResult">
+  <div class="no-result-emoji">🏴</div>
+  <h3>NO SPORTS FOUND</h3>
+  <p>Try a different search term or remove filters.</p>
+</div>
+<div id="mainContent" style="padding-bottom:4rem;"></div>
+
+<div id="sport_modal">
+  <div class="modal_inner">
+    <button id="close_modal_btn" onclick="window.closeModal()">✕ CLOSE</button>
+    <div id="modal_body"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ─── CONFIG ──────────────────────────────────────────── */
+const XML_URL = 'https://raw.githubusercontent.com/Hunny-Chaurasia/-myHealthyFitness/main/sports.xml';
+
+/* ─── SPORT EMOJIS ─────────────────────────────────────── */
+const EMOJI_MAP = {
+  chess:'♟️', swimming:'🏊', fencing:'🤺', 'table tennis':'🏓',
+  tabletennis:'🏓', badminton:'🏸', gymnastics:'🤸', basketball:'🏀',
+  judo:'🥋', 'beach volleyball':'🏐', beachvolleyball:'🏐',
+  football:'⚽', cricket:'🏏', athletics:'🏃', rowing:'🚣',
+  archery:'🏹', triathlon:'🏅', tennis:'🎾', volleyball:'🏐',
+  boxing:'🥊', karate:'🥋', handball:'🤾', weightlifting:'🏋️', wrestling:'🤼'
+};
+function getEmoji(name){
+  const lo = (name||'').toLowerCase().replace(/\s+/g,'');
+  for(const[k,v] of Object.entries(EMOJI_MAP)){
+    if(lo.includes(k.replace(/\s+/g,''))) return v;
+  }
+  return '🏅';
+}
+
+/* ─── SAFE TEXT HELPER ─────────────────────────────────── */
+function esc(s){ return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+/* ─── XML HELPER ──────────────────────────────────────── */
+function getText(node, ...selectors){
+  for(const sel of selectors){
+    try {
+      const el = node.querySelector(sel);
+      if(el && el.textContent.trim()) return el.textContent.trim();
+    } catch(e) {}
+  }
+  return '';
+}
+function getAllText(node, ...selectors){
+  for(const sel of selectors){
+    try {
+      const els = Array.from(node.querySelectorAll(sel)).map(e=>e.textContent.trim()).filter(Boolean);
+      if(els.length) return els;
+    } catch(e) {}
+  }
+  return [];
+}
+
+/* ─── DISPLAY NAME FROM TAG ─────────────────────────────── */
+function tagToName(tagName){
+  // Remove "CompleteGuide" / "Complete" / "Guide" suffix (case-insensitive)
+  const cleaned = tagName
+    .replace(/completeguide$/i,'')
+    .replace(/complete$/i,'')
+    .replace(/guide$/i,'');
+
+  // Known special mappings
+  const MAP = {
+    chess:'Chess', swimming:'Swimming', fencing:'Fencing',
+    tabletennis:'Table Tennis', badminton:'Badminton', gymnastics:'Gymnastics',
+    basketball:'Basketball', judo:'Judo', beachvolleyball:'Beach Volleyball',
+    football:'Football', cricket:'Cricket', athletics:'Athletics',
+    rowing:'Rowing', archery:'Archery', triathlon:'Triathlon', tennis:'Tennis',
+    volleyball:'Volleyball', boxing:'Boxing', karate:'Karate', handball:'Handball',
+    weightlifting:'Weightlifting', wrestling:'Wrestling'
+  };
+  const key = cleaned.toLowerCase();
+  if(MAP[key]) return MAP[key];
+
+  // Fallback: split camelCase
+  return cleaned
+    .replace(/([a-z])([A-Z])/g,'$1 $2')
+    .replace(/^./,c=>c.toUpperCase());
+}
+
+/* ─── PARSE XML ──────────────────────────────────────── */
+function parseSports(xmlDoc){
+  const sports = [];
+
+  function extractSport(guideEl, type){
+    const name = tagToName(guideEl.tagName);
+    if(!name) return null;
+
+    // Image
+    const imgEl = guideEl.querySelector('imageUrl');
+    let image = imgEl ? imgEl.textContent.trim() : '';
+    if(image && !image.startsWith('http')){
+      image = `https://raw.githubusercontent.com/Hunny-Chaurasia/-myHealthyFitness/main/${image}`;
+    }
+
+    // Dimensions / field
+    const dims = guideEl.querySelector('dimensions');
+    const fieldSize = dims
+      ? Array.from(dims.children).slice(0,3).map(c=>c.textContent.trim()).filter(Boolean).join(' · ')
+      : '';
+    const surface = getText(guideEl,'surfaceTypes','surface');
+    const venues  = getText(guideEl,'venues');
+
+    // Health benefits - try various selectors
+    const benefits = getAllText(guideEl,'benefit','healthBenefits benefit');
+
+    // Warmup / Cooldown
+    const warmupEl   = guideEl.querySelector('warmup');
+    const cooldownEl = guideEl.querySelector('cooldown');
+    const warmupItems = warmupEl ? [
+      getText(warmupEl,'stretching'),
+      getText(warmupEl,'pregameExercises','pregameActivation'),
+      getText(warmupEl,'duration') ? 'Duration: '+getText(warmupEl,'duration') : ''
+    ].filter(Boolean) : [];
+    const cooldownItems = cooldownEl ? [
+      getText(cooldownEl,'postgameRecovery','recovery'),
+      getText(cooldownEl,'duration') ? 'Duration: '+getText(cooldownEl,'duration') : ''
+    ].filter(Boolean) : [];
+
+    // Rules
+    const rules   = getAllText(guideEl,'basicRules rule','rule');
+    const players = getText(guideEl,'numberOfPlayers','players');
+    const scoring = getText(guideEl,'scoringSystem win','win','scoringSystem','scoring');
+    const howToWin= getText(guideEl,'howToWin');
+
+    // Timings
+    const timingsEl  = guideEl.querySelector('matchTimings');
+    const timingText = timingsEl
+      ? Array.from(timingsEl.children).slice(0,3).map(c=>c.tagName+': '+c.textContent.trim()).join(' · ')
+      : '';
+
+    // Breaks
+    const breaksEl  = guideEl.querySelector('breaksIntervals');
+    const breaksText= breaksEl
+      ? Array.from(breaksEl.children).slice(0,3).map(c=>c.textContent.trim()).filter(Boolean).join('; ')
+      : '';
+
+    // Fouls
+    const fouls = getAllText(guideEl,'foulsAndPenalties penalty','penalty');
+
+    // Injury
+    const injuries   = getAllText(guideEl,'commonInjuries injury','injury');
+    const prevention = getAllText(guideEl,'preventionMethods method','method');
+    const diseasesToAvoid = getAllText(guideEl,'diseasesToAvoidPlaying condition','condition');
+
+    // Equipment & safety
+    const equipItems  = getAllText(guideEl,'equipment item');
+    const safetyItems = getAllText(guideEl,'safetyGear item');
+
+    // Hydration
+    const hydBefore = getText(guideEl,'beforeMatch','beforeRace','beforePractice');
+    const hydDuring = getText(guideEl,'duringMatch','duringRace','duringPractice','duringGame');
+    const hydAfter  = getText(guideEl,'afterMatch','afterRace','afterPractice');
+    const hydAvoid  = getText(guideEl,'warningAvoid');
+    const hydSigns  = getText(guideEl,'signsOfDehydration');
+
+    // Nutrition
+    const nutPre    = getText(guideEl,'preGame','preMatch','preRace','prePractice');
+    const nutDuring = getText(guideEl,'duringGame','duringMatch','duringRace');
+    const nutPost   = getText(guideEl,'postGame','postMatch','postRace','postPractice');
+    const nutDaily  = getText(guideEl,'daily');
+
+    // Burnout
+    const physLimit = getText(guideEl,'physicalBurnout limit');
+    const physRest  = getText(guideEl,'physicalBurnout restDays');
+    const physCross = getText(guideEl,'physicalBurnout crossTrain');
+    const mentSigns = getText(guideEl,'mentalBurnout signs');
+    const mentSol   = getText(guideEl,'mentalBurnout solution');
+
+    // Skills
+    const skillCoord      = getText(guideEl,'coordination desc');
+    const skillCoordDrill = getText(guideEl,'coordination drill');
+    const skillSpeed      = getText(guideEl,'speedAgility desc');
+    const skillFocus      = getText(guideEl,'focusReaction desc');
+    const xFactors        = [
+      getText(guideEl,'xFactors strategy offensive','xFactors strategy opening'),
+      getText(guideEl,'xFactors strategy defensive','xFactors strategy middlegame'),
+      getText(guideEl,'xFactors gameSense'),
+      getText(guideEl,'xFactors decisionMaking')
+    ].filter(Boolean);
+
+    // Practice
+    const days = Array.from(guideEl.querySelectorAll('dailyPlan day')).map(d=>{
+      return (d.getAttribute('label')||'Day')+': '+d.textContent.trim();
+    });
+    const beginnerDrills = Array.from(guideEl.querySelectorAll('drillsForBeginners drill')).map(d=>{
+      return ((d.getAttribute('name')||'')+' — '+d.textContent.trim()).replace(/^— /,'');
+    });
+
+    // Mental prep
+    const techniques = Array.from(guideEl.querySelectorAll('focusingTechniques technique')).map(t=>{
+      const nm = t.getAttribute('name')||'';
+      return (nm?nm+': ':'')+t.textContent.trim();
+    });
+    const pressureTips = getAllText(guideEl,'pressureHandling tip','tip');
+    const sportManship = getAllText(guideEl,'sportsmanship rule');
+
+    // Strategies
+    const strategies = Array.from(guideEl.querySelectorAll('strategies strategy, strategy[name]')).map(s=>{
+      const nm = s.getAttribute('name')||'';
+      return (nm?nm+': ':'')+s.textContent.trim();
+    });
+
+    // Terminology
+    const terms = getAllText(guideEl,'terminologies term','term');
+
+    // Joining
+    const joiningEl   = guideEl.querySelector('howToJoinSport');
+    const joiningSteps= joiningEl ? getAllText(joiningEl,'step') : [];
+    const costEstimate= joiningEl ? getText(joiningEl,'costEstimate') : '';
+
+    // Qualities
+    const qualities = getAllText(guideEl,'qualitiesOfGoodPlayer quality','quality');
+
+    return {
+      name, type, image, fieldSize, surface, venues,
+      benefits, warmupItems, cooldownItems,
+      rules, players, scoring, howToWin, timingText, breaksText, fouls,
+      injuries, prevention, diseasesToAvoid,
+      equipItems, safetyItems,
+      hydBefore, hydDuring, hydAfter, hydAvoid, hydSigns,
+      nutPre, nutDuring, nutPost, nutDaily,
+      physLimit, physRest, physCross, mentSigns, mentSol,
+      skillCoord, skillCoordDrill, skillSpeed, skillFocus, xFactors,
+      days, beginnerDrills,
+      techniques, pressureTips, sportManship,
+      strategies, terms,
+      joiningSteps, costEstimate, qualities
+    };
+  }
+
+  // Process indoorGames - accept ANY child element (not just ones containing "guide")
+  const indoorEl = xmlDoc.querySelector('indoorGames');
+  if(indoorEl){
+    Array.from(indoorEl.children).forEach(child=>{
+      const sport = extractSport(child, 'indoor');
+      if(sport && sport.name) sports.push(sport);
+    });
+  }
+
+  // Process outdoorGames
+  const outdoorEl = xmlDoc.querySelector('outdoorGames');
+  if(outdoorEl){
+    Array.from(outdoorEl.children).forEach(child=>{
+      const sport = extractSport(child, 'outdoor');
+      if(sport && sport.name) sports.push(sport);
+    });
+  }
+
+  return sports;
+}
+
+/* ─── FETCH XML ─────────────────────────────────────────── */
+async function fetchXML(){
+  const proxies = [
+    XML_URL,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(XML_URL)}`,
+    `https://corsproxy.io/?${encodeURIComponent(XML_URL)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(XML_URL)}`
+  ];
+  for(const url of proxies){
+    try{
+      const r = await fetch(url,{cache:'no-store'});
+      if(!r.ok) continue;
+      const txt = await r.text();
+      if(txt.includes('indoorGames') || txt.includes('outdoorGames') || txt.includes('Guide')) return txt;
+    }catch(e){ console.warn('Proxy failed:',url,e); }
+  }
+  return null;
+}
+
+/* ─── STATE ──────────────────────────────────────────────── */
+let allSports = [];
+let currentFilter = 'all';
+let currentSearch = '';
+
+/* ─── CARD CREATION ─────────────────────────────────────── */
+function createCard(sport){
+  const card = document.createElement('div');
+  card.className = `sport-card ${sport.type}-card`;
+  card.dataset.name = sport.name.toLowerCase();
+  card.dataset.type = sport.type;
+
+  const emoji = getEmoji(sport.name);
+  const imgHtml = sport.image
+    ? `<img src="${esc(sport.image)}" alt="${esc(sport.name)}" loading="lazy"
+         onerror="this.parentElement.innerHTML='<div class=media-placeholder><div class=sport-emoji>${emoji}</div><span>No image</span></div>'">`
+    : `<div class="media-placeholder"><div class="sport-emoji">${emoji}</div><span>Tap to explore</span></div>`;
+
+  const previewText = (sport.timingText || sport.fieldSize || sport.benefits[0] || 'Tap to view full guide').substring(0,90);
+
+  card.innerHTML = `
+    <div class="card-media">
+      ${imgHtml}
+      <span class="type-badge ${sport.type}">${sport.type==='indoor'?'🏠 Indoor':'🌿 Outdoor'}</span>
+    </div>
+    <div class="card-content">
+      <div class="sport-name">${esc(sport.name)}</div>
+      <div class="sport-meta">
+        ${sport.players?`<span class="meta-chip">👥 ${esc(sport.players.substring(0,32))}</span>`:''}
+        ${sport.surface?`<span class="meta-chip">🏟 ${esc(sport.surface.substring(0,24))}</span>`:''}
+      </div>
+      <div class="sport-desc">${esc(previewText)}</div>
+      <button class="enter-btn">ENTER SPORT ›</button>
+    </div>`;
+  card.addEventListener('click',()=>openModal(sport));
+  return card;
+}
+
+/* ─── RENDER GRID ────────────────────────────────────────── */
+function renderSports(list){
+  const container = document.getElementById('mainContent');
+  const noResult  = document.getElementById('noResult');
+  const count     = document.getElementById('resultCount');
+  container.innerHTML = '';
+
+  if(!list.length){
+    noResult.style.display = 'flex';
+    count.textContent = '0 sports';
+    return;
+  }
+  noResult.style.display = 'none';
+  count.textContent = `${list.length} sport${list.length!==1?'s':''}`;
+
+  const groups = {};
+  list.forEach(s=>{
+    const l = s.name[0].toUpperCase();
+    if(!groups[l]) groups[l]=[];
+    groups[l].push(s);
+  });
+
+  Object.keys(groups).sort().forEach(letter=>{
+    const section = document.createElement('div');
+    section.className = 'alpha-section';
+    const h = document.createElement('div');
+    h.className = 'alpha-heading';
+    h.setAttribute('data-letter',letter);
+    h.textContent = letter;
+    const div = document.createElement('div');
+    div.className = 'alpha-divider';
+    const grid = document.createElement('div');
+    grid.className = 'sport-grid';
+    groups[letter].forEach(s=>grid.appendChild(createCard(s)));
+    section.append(h,div,grid);
+    container.appendChild(section);
+  });
+}
+
+function applyFilters(){
+  let list = allSports;
+  if(currentFilter!=='all') list = list.filter(s=>s.type===currentFilter);
+  if(currentSearch){
+    const q = currentSearch.toLowerCase();
+    list = list.filter(s=>
+      s.name.toLowerCase().includes(q) ||
+      s.terms.some(t=>t.toLowerCase().includes(q)) ||
+      s.benefits.some(b=>b.toLowerCase().includes(q))
+    );
+  }
+  renderSports(list);
+}
+
+/* ─── SEARCH ─────────────────────────────────────────────── */
+const sugBox     = document.getElementById('suggestions');
+const searchInput= document.getElementById('searchInput');
+
+function showSuggestions(query){
+  sugBox.innerHTML='';
+  if(!query){sugBox.style.display='none';return;}
+  const q = query.toLowerCase();
+  const matches = allSports.filter(s=>s.name.toLowerCase().includes(q));
+  if(!matches.length){
+    sugBox.innerHTML=`<div class="suggestion-item"><span class="sug-name" style="color:var(--muted)">No match for "${esc(query)}"</span></div>`;
+    sugBox.style.display='block';
+    return;
+  }
+  matches.slice(0,8).forEach(s=>{
+    const item=document.createElement('div');
+    item.className='suggestion-item';
+    item.innerHTML=`<span class="sug-icon">${getEmoji(s.name)}</span><span class="sug-name">${esc(s.name)}</span><span class="sug-type ${s.type}">${s.type}</span>`;
+    item.addEventListener('click',()=>{
+      searchInput.value=s.name;
+      currentSearch=s.name;
+      sugBox.style.display='none';
+      applyFilters();
+      setTimeout(()=>{
+        const card=document.querySelector(`[data-name="${s.name.toLowerCase()}"]`);
+        if(card) card.scrollIntoView({behavior:'smooth',block:'center'});
+      },100);
+    });
+    sugBox.appendChild(item);
+  });
+  sugBox.style.display='block';
+}
+
+searchInput.addEventListener('input',e=>{
+  currentSearch=e.target.value.trim();
+  showSuggestions(currentSearch);
+  applyFilters();
+});
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.search-wrap')) sugBox.style.display='none';
+});
+
+/* ─── FILTER BUTTONS ─────────────────────────────────────── */
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    currentFilter=btn.dataset.filter;
+    document.querySelectorAll('.filter-btn').forEach(b=>b.className='filter-btn');
+    btn.classList.add(`active-${currentFilter}`);
+    applyFilters();
+  });
+});
+
+/* ─── MODAL ──────────────────────────────────────────────── */
+function block(icon,label,html,cls=''){
+  if(!html||html.trim()==='') return '';
+  return `<div class="section-block"><div class="section-block-title ${cls}">${icon} ${label}</div>${html}</div>`;
+}
+function row(label,val){
+  return val?`<div class="info-row"><span class="info-label">${label}</span><span>${esc(val)}</span></div>`:'';
+}
+function tagList(arr){
+  if(!arr||!arr.length) return '<em style="color:var(--muted);font-size:.8rem">–</em>';
+  return `<div class="tag-list">${arr.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>`;
+}
+function ulList(arr){
+  if(!arr||!arr.length) return '<em style="color:var(--muted);font-size:.8rem">–</em>';
+  return `<ul class="modal-list">${arr.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
+}
+function prose(txt){
+  return `<p style="font-size:.85rem;color:#bcc8d4;line-height:1.6">${esc(txt||'–')}</p>`;
+}
+
+const TABS = [
+  {id:'overview', label:'📋 Overview'},
+  {id:'rules',    label:'📜 Rules'},
+  {id:'health',   label:'💊 Health'},
+  {id:'training', label:'🏋 Training'},
+  {id:'strategy', label:'🧠 Strategy'},
+  {id:'terms',    label:'📖 Terms'},
+  {id:'join',     label:'🚀 Join'}
+];
+
+function openModal(s){
+  const body  = document.getElementById('modal_body');
+  const modal = document.getElementById('sport_modal');
+  body.innerHTML = '';
+
+  const emoji = getEmoji(s.name);
+  const color = s.type==='indoor'?'var(--indoor)':'var(--outdoor)';
+
+  // Image
+  if(s.image){
+    const img = document.createElement('img');
+    img.src=s.image; img.className='modal-sport-img'; img.alt=s.name;
+    img.onerror=()=>img.remove();
+    body.appendChild(img);
+  }
+
+  // Title
+  const titleEl = document.createElement('div');
+  titleEl.className='modal-sport-title';
+  titleEl.innerHTML=`${emoji} ${esc(s.name)}`;
+  titleEl.style.color=color;
+  body.appendChild(titleEl);
+
+  // Meta
+  const meta = document.createElement('div');
+  meta.className='modal-meta';
+  meta.innerHTML=`
+    <span class="type-badge ${s.type}" style="position:static">${s.type==='indoor'?'🏠 Indoor':'🌿 Outdoor'}</span>
+    ${s.venues?`<span class="meta-chip">🏟 ${esc(s.venues.substring(0,50))}</span>`:''}
+    ${s.players?`<span class="meta-chip">👥 ${esc(s.players.substring(0,35))}</span>`:''}
+  `;
+  body.appendChild(meta);
+
+  // Tabs
+  const tabsRow = document.createElement('div');
+  tabsRow.className='tabs-row';
+  TABS.forEach((t,i)=>{
+    const btn=document.createElement('button');
+    btn.className='tab-btn'+(i===0?' active':'');
+    btn.textContent=t.label;
+    btn.dataset.tab=t.id;
+    btn.addEventListener('click',()=>{
+      tabsRow.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      body.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      body.querySelector(`#tab-${t.id}`).classList.add('active');
+    });
+    tabsRow.appendChild(btn);
+  });
+  body.appendChild(tabsRow);
+
+  // Panel HTML
+  const panels = {
+    overview:
+      block('📐','Field / Court',
+        row('Dimensions',s.fieldSize)+row('Surface',s.surface)+row('Venue',s.venues)
+      )+
+      block('⏱️','Match Info',
+        row('Players',s.players)+row('Timing',s.timingText)+
+        row('Breaks',s.breaksText)+row('Scoring',s.scoring)+row('How to Win',s.howToWin)
+      )+
+      (s.benefits.length ? block('💚','Health Benefits',ulList(s.benefits),'green') : ''),
+
+    rules:
+      block('📜','Basic Rules',ulList(s.rules))+
+      (s.fouls.length ? block('🚫','Fouls & Penalties',ulList(s.fouls),'orange') : ''),
+
+    health:
+      (s.injuries.length    ? block('⚠️','Common Injuries',tagList(s.injuries),'orange') : '')+
+      (s.prevention.length  ? block('🛡️','Prevention Methods',ulList(s.prevention)) : '')+
+      (s.diseasesToAvoid.length ? block('🩺','Conditions to Avoid Playing',ulList(s.diseasesToAvoid)) : '')+
+      block('💧','Hydration',
+        row('Before',s.hydBefore)+row('During',s.hydDuring)+row('After',s.hydAfter)+
+        row('Avoid',s.hydAvoid)+row('Dehydration signs',s.hydSigns)
+      )+
+      block('🥗','Nutrition',
+        row('Pre-game',s.nutPre)+row('During',s.nutDuring)+row('Post-game',s.nutPost)+row('Daily',s.nutDaily)
+      ),
+
+    training:
+      (s.warmupItems.length   ? block('🔥','Warm-Up',ulList(s.warmupItems),'green') : '')+
+      (s.cooldownItems.length ? block('❄️','Cool-Down',ulList(s.cooldownItems)) : '')+
+      block('💡','Key Skills',
+        row('Coordination',s.skillCoord)+
+        (s.skillCoordDrill ? row('Drill',s.skillCoordDrill) : '')+
+        row('Speed / Agility',s.skillSpeed)+
+        row('Focus / Reaction',s.skillFocus)
+      )+
+      (s.xFactors.length      ? block('⭐','X-Factors',ulList(s.xFactors)) : '')+
+      (s.equipItems.length    ? block('🎽','Equipment',ulList(s.equipItems)) : '')+
+      (s.safetyItems.length   ? block('🦺','Safety Gear',ulList(s.safetyItems)) : '')+
+      (s.days.length          ? block('🗓️','Weekly Practice Plan',ulList(s.days)) : '')+
+      (s.beginnerDrills.length? block('🎯','Beginner Drills',ulList(s.beginnerDrills)) : '')+
+      block('🚫','Avoiding Burnout',
+        row('Physical limit',s.physLimit)+row('Rest days',s.physRest)+
+        row('Cross-train',s.physCross)+row('Mental signs',s.mentSigns)+row('Solution',s.mentSol)
+      ),
+
+    strategy:
+      (s.techniques.length    ? block('🧠','Mental Preparation',ulList(s.techniques)) : '')+
+      (s.pressureTips.length  ? block('💪','Pressure Handling',ulList(s.pressureTips)) : '')+
+      (s.strategies.length    ? block('♟️','Strategies & Tactics',ulList(s.strategies)) : '')+
+      (s.sportManship.length  ? block('🤝','Sportsmanship',ulList(s.sportManship)) : ''),
+
+    terms:
+      block('📖','Terminology',tagList(s.terms)),
+
+    join:
+      (s.joiningSteps.length  ? block('🚀','How to Join',ulList(s.joiningSteps)) : '')+
+      (s.costEstimate         ? block('💰','Cost Estimate',prose(s.costEstimate)) : '')+
+      (s.qualities.length     ? block('🌟','Qualities of a Good Player',tagList(s.qualities)) : '')
+  };
+
+  TABS.forEach((t,i)=>{
+    const panel=document.createElement('div');
+    panel.className='tab-panel'+(i===0?' active':'');
+    panel.id=`tab-${t.id}`;
+    panel.innerHTML=panels[t.id]||'<em style="color:var(--muted);padding:1rem;display:block">No data available for this section.</em>';
+    body.appendChild(panel);
+  });
+
+  modal.style.display='flex';
+  modal.scrollTop=0;
+  document.body.style.overflow='hidden';
+}
+
+window.closeModal=function(){
+  document.getElementById('sport_modal').style.display='none';
+  document.body.style.overflow='';
+};
+document.getElementById('sport_modal').addEventListener('click',e=>{
+  if(e.target===document.getElementById('sport_modal')) window.closeModal();
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') window.closeModal(); });
+
+/* ─── INIT ───────────────────────────────────────────────── */
+async function init(){
+  const loadEl = document.getElementById('loading_msg');
+  const errEl  = document.getElementById('error_msg');
+  loadEl.style.display='flex';
+  errEl.style.display='none';
+
+  try{
+    const xmlStr = await fetchXML();
+    if(!xmlStr) throw new Error('Could not fetch XML from GitHub (all proxies failed)');
+
+    // Sanitise stray & characters
+    const cleanXml = xmlStr.replace(/&(?!(amp|lt|gt|quot|apos|#\d+|#x[\da-fA-F]+);)/g,'&amp;');
+
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(cleanXml,'text/xml');
+    const parseErr = xmlDoc.querySelector('parsererror');
+    if(parseErr) throw new Error('XML parse error: '+parseErr.textContent.substring(0,300));
+
+    allSports = parseSports(xmlDoc);
+    if(!allSports.length) throw new Error('No sport guides found in XML. Check indoorGames/outdoorGames structure.');
+
+    allSports.sort((a,b)=>a.name.localeCompare(b.name));
+    loadEl.style.display='none';
+    renderSports(allSports);
+
+  }catch(err){
+    loadEl.style.display='none';
+    errEl.style.display='block';
+    errEl.innerHTML=`
+      <div style="font-size:2.5rem;margin-bottom:1rem">⚠️</div>
+      <h3 style="font-family:'Oswald',sans-serif;letter-spacing:2px;margin-bottom:.5rem">FAILED TO LOAD XML</h3>
+      <p style="color:var(--muted);font-size:.88rem;margin-bottom:.5rem">${esc(err.message)}</p>
+      <p style="color:#3a4a5a;font-size:.75rem;margin-top:.5rem">Source: ${esc(XML_URL)}</p>
+      <button class="retry-btn" onclick="location.reload()">↺ RETRY</button>
+    `;
+    console.error('Sports Arena Error:',err);
+  }
+}
+
+init();
+})();
+</script>
+</body>
+</html>

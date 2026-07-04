@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Motion Mentor PuzzleJigsaw| @myMotionMentor</title>
+  <link rel="icon" href="WhatsApp Image 2025-09-24 at 10.58.05 PM.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+* { margin:0;padding:0;box-sizing:border-box;text-align:center;overflow:visible; }
+.inter { font-family:"Inter",sans-serif;font-optical-sizing:auto;font-weight:300; }
+body {
+  color:#ffe8e8;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:
+    conic-gradient(from 180deg at 50% 50%,#0f1422,#1a1f2e,#0a0f1c,#161b2a,#0a0f1c,#1a1f2e,#0b101d),
+    radial-gradient(circle at center,rgba(255,255,255,0.03),transparent 70%);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+}
+#screen_container { display:flex;flex-direction:column;width:100%;padding-left:20vw;height:100vh;top:0px; }
+#News-Shelter,#Expert-Consult,#Nutrition,#Workouts,#Progress,#Achivements,#Chatbot,#Settings,#Community,#Home { padding:2vh;position:relative;left:0vw;right:0vh;width:100vw; }
+.container { position:fixed;top:0;width:75vw;height:100vh;overflow-y:auto;background-color:rgba(0,0,0,0.01); }
+.screen { display:none;width:calc(100VW - 21VW);min-height:100%; }
+.screen.active { display:block; }
+.nav-item { transition:all 0.3s ease; }
+#Menu { width:100%;background-color:rgb(2,0,28);border:none;color:white;display:none; }
+#bottom-nav .subtitle2 { color:rgb(129,126,126);font-weight:lighter;text-align:center; }
+#bottom-nav p { text-align:center;padding:auto;margin:auto;padding-top:3%;padding-bottom:3%; }
+#Motion-Mentor { background:linear-gradient(135deg,#218fa0,#21a027);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:transparent;font-weight:bolder;margin:auto;padding-top:10%;padding-bottom:3%; }
+#top-nav { display:none; }
+#left-nav { display:block; }
+.header { text-align:center;position:relative;width:calc(100vw - 20vw); }
+.header h1 { font-size:20px;margin-bottom:5px; }
+.header .subtitle { font-size:12px;opacity:0.9; }
+#bottom-nav { position:fixed;bottom:0;top:0%;left:0%;width:20vw;right:0;background:rgb(11 16 30);padding-bottom:2vh;height:100vh;box-shadow:0 -2px 10px rgba(0,0,0,0.1);display:block;border-right:1px solid rgba(255,255,255,0.149); }
+.nav { height:80%;display:flex;flex-direction:column;justify-content:space-around;align-items:flex-start;flex-wrap:wrap; }
+.nav-item { cursor:pointer;transition:all 0.3s ease;border-radius:8px;width:90%;text-align:left;padding-left:AUTO;margin:auto;color:#ffffff; }
+.nav-item:hover { color:#ffef08; }
+.nav-icon { width:3.2vh;height:3.2vh;margin-bottom:3px;font-size:2.5vh;text-align:left; }
+.nav-text { font-size:2.5vh;font-weight:500;width:14vw;text-align:left; }
+.welcome-section { text-align:left;margin:0;top:0;left:0;right:0;margin-bottom:3vh;width:95%;position:relative;transition:all 0.3s ease;z-index:5;padding:10vh 0vh 6vh;right:0;background:linear-gradient(145deg,rgba(26,31,46,0.9) 0%,rgba(10,15,28,0.95) 50%,rgba(22,27,42,0.9) 100%);border:1px solid rgba(255,255,255,0.1);border-radius:20px;backdrop-filter:blur(10px);box-shadow:0 20px 40px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.1);margin:2vh;text-align:center; }
+.welcome-section h2 { color:#f8fafc;font-size:2.5rem;font-weight:700;margin-bottom:8px;text-shadow:0 2px 4px rgba(0,0,0,0.5); }
+.head-subtitle4 { font-size:2rem;font-weight:bolder; }
+.subtitle4 { font-size:1rem; }
+.flex { display:flex;justify-content:space-between;align-items:center;padding:1vh;margin-bottom:1vh;flex-wrap:wrap; }
+.Join-Team-Quest,.Track-My-Impact,.log-btn,#custom-btn,.continue-streak-btn,.start-learning-btn,#Quest-btn,.Join-Challenge-btn { background:green;color:white;border:none;padding:1.5vh;width:30vw;height:fit-content;border-radius:2vh;font-size:2vh;font-weight:bold;cursor:pointer;transition:transform 0.2s;margin-top:2vh; }
+.Join-Team-Quest:hover { transform:translateY(-2px);box-shadow:0 4px 15px rgba(3,11,9,0.844);font-size:large; }
+@media (max-width:1023px) { #bottom-nav{display:none;} .screen{width:100%;padding-top:29vh;} .container{width:100%;} .nav-text{font-size:2vh;} .nav-item{width:35vw;} }
+@media (max-width:768px) { .welcome-section{padding:6vh 2vh;} }
+.gungi-board { background:linear-gradient(145deg,#2d3e2a,#1e2a1b);border-radius:28px;padding:25px;margin:25px auto;max-width:550px;box-shadow:0 25px 45px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.1); }
+.gungi-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:15px;background:#8b5a2b;padding:20px;border-radius:24px;box-shadow:inset 0 0 0 2px #c9863a,0 10px 20px rgba(0,0,0,0.3); }
+.gungi-cell { aspect-ratio:1;background:radial-gradient(circle at 30% 30%,#f3e5ab,#d4a373);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;font-weight:bold;cursor:pointer;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:0 6px 0 #6b3e1a,inset 0 1px 0 rgba(255,255,255,0.6);text-shadow:2px 2px 2px rgba(0,0,0,0.2); }
+.gungi-cell:hover:not(.disabled) { transform:translateY(-3px);background:radial-gradient(circle at 30% 30%,#ffe8b5,#e6b87a);box-shadow:0 9px 0 #6b3e1a; }
+.gungi-cell.disabled { cursor:not-allowed;opacity:0.8;filter:grayscale(0.1); }
+.game-status { background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);padding:15px;border-radius:50px;margin:20px 0;font-weight:bold;font-size:1.1rem;border:1px solid rgba(255,215,0,0.3); }
+.score-panel { display:flex;justify-content:space-between;background:rgba(0,0,0,0.5);padding:12px 25px;border-radius:60px;margin-bottom:25px;backdrop-filter:blur(4px);font-weight:600; }
+.highscore-glory { color:#ffd966;text-shadow:0 0 8px #ffaa00;font-weight:bold; }
+.player-badge { display:inline-flex;align-items:center;gap:10px;background:rgba(0,0,0,0.4);padding:8px 20px;border-radius:40px;font-size:1.2rem; }
+.stat-number { font-size:2.5rem;font-weight:700;background:linear-gradient(135deg,#ffd966,#ffb347);-webkit-background-clip:text;background-clip:text;color:transparent; }
+
+/* ═══════════════════════════════════════════
+   JIGSAW ADDITIONS
+═══════════════════════════════════════════ */
+:root {
+  --acc1:#218fa0; --acc2:#21a027;
+  --panel:rgba(26,31,46,0.92);
+  --border:rgba(255,255,255,0.1);
+  --gold:#ffd966; --gold2:#ffb347;
+}
+
+::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-track{background:transparent} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+
+/* ── Game root ── */
+#game-root { width:100vw;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px 40px;overflow-y:auto; }
+
+/* top bar */
+.top-bar { width:min(900px,98vw);display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
+.logo-txt { font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,var(--acc1),var(--acc2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent; }
+
+/* score bar */
+.score-bar { width:min(900px,98vw);display:flex;gap:10px;margin-bottom:16px; }
+.sc { flex:1;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:10px 8px;backdrop-filter:blur(6px); }
+.sc .lbl { font-size:.68rem;color:rgba(255,232,232,.45);margin-bottom:3px; }
+.sc .val { font-size:1.3rem;font-weight:700; }
+.sc .val.gold { background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent; }
+
+/* ── GALLERY ── */
+#gallery-screen { width:min(900px,98vw); }
+.gallery-title { font-size:1.6rem;font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,var(--acc1),var(--acc2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent; }
+.gallery-sub { font-size:.85rem;color:rgba(255,232,232,.5);margin-bottom:20px; }
+
+.diff-row { display:flex;gap:8px;margin-bottom:18px;justify-content:center;flex-wrap:wrap; }
+.diff-btn { padding:7px 18px;border-radius:30px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,232,232,.65);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s; }
+.diff-btn.active,.diff-btn:hover { background:rgba(33,143,160,.3);border-color:rgba(33,143,160,.6);color:#ffe8e8; }
+
+.puzzle-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px; }
+.puzzle-card { border-radius:16px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:all .25s;position:relative;aspect-ratio:1;background:#111; }
+.puzzle-card img { width:100%;height:100%;object-fit:cover;display:block; }
+.puzzle-card .card-label { position:absolute;bottom:0;left:0;right:0;padding:8px 6px 6px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-size:.78rem;font-weight:600;color:#ffe8e8; }
+.puzzle-card:hover { border-color:var(--acc1);transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.5); }
+.puzzle-card.selected { border-color:var(--acc2);box-shadow:0 0 0 3px rgba(33,160,39,.35); }
+
+.upload-zone { border:2px dashed rgba(255,255,255,.2);border-radius:20px;padding:36px 20px;cursor:pointer;transition:all .25s;margin-bottom:20px;position:relative; }
+.upload-zone:hover,.upload-zone.drag { border-color:var(--acc1);background:rgba(33,143,160,.08); }
+.upload-zone input { position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%; }
+.upload-icon { font-size:2.5rem;margin-bottom:8px; }
+.upload-txt { font-size:.9rem;color:rgba(255,232,232,.6); }
+.upload-preview { width:100%;max-height:180px;object-fit:cover;border-radius:12px;margin-top:14px;display:none; }
+
+.start-btn { padding:14px 40px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--acc1),var(--acc2));color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer;transition:opacity .2s,transform .2s;margin-bottom:10px; }
+.start-btn:hover { opacity:.88;transform:translateY(-2px); }
+.start-btn:disabled { opacity:.35;cursor:not-allowed;transform:none; }
+
+/* ── PUZZLE SCREEN ── */
+#puzzle-screen { display:none;width:min(900px,98vw); }
+.puzzle-ctrl { display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;justify-content:center; }
+.p-btn { padding:8px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#ffe8e8;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s; }
+.p-btn:hover { background:rgba(255,255,255,.14);transform:translateY(-1px); }
+.p-btn.danger:hover { background:rgba(220,60,60,.25);border-color:rgba(220,60,60,.4); }
+.timer-pill { background:rgba(0,0,0,.5);border:1px solid rgba(255,215,0,.28);border-radius:40px;padding:8px 22px;font-size:1rem;font-weight:700;letter-spacing:2px;color:var(--gold); }
+.progress-bar-wrap { width:100%;background:rgba(255,255,255,.08);border-radius:40px;height:8px;margin-bottom:14px;overflow:hidden; }
+.progress-bar-fill { height:100%;border-radius:40px;background:linear-gradient(90deg,var(--acc1),var(--acc2));transition:width .4s ease; }
+
+.puzzle-area { display:flex;gap:14px;width:100%;flex-wrap:wrap;justify-content:center; }
+
+#board-wrap { position:relative;background:linear-gradient(145deg,rgba(20,26,40,.95),rgba(10,15,28,.98));border:1px solid rgba(255,255,255,.1);border-radius:20px;overflow:hidden;flex-shrink:0; }
+#board-canvas { display:block;cursor:default; }
+
+#tray-wrap { background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:12px;overflow-y:auto;min-width:130px;max-width:160px;min-height:300px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;align-items:center; }
+#tray-wrap .tray-label { font-size:.7rem;color:rgba(255,232,232,.4);margin-bottom:4px; }
+.tray-piece { border-radius:8px;cursor:grab;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);transition:transform .15s,box-shadow .15s;flex-shrink:0; }
+.tray-piece:hover { transform:scale(1.06);box-shadow:0 6px 18px rgba(0,0,0,.5); }
+.tray-piece.dragging-src { opacity:.35; }
+
+/* ── Win overlay ── */
+#win-overlay { display:none;position:fixed;inset:0;z-index:900;align-items:center;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(10px); }
+#win-overlay.show { display:flex; }
+.win-box { background:linear-gradient(145deg,rgba(26,31,46,.98),rgba(10,15,28,.99));border:1px solid rgba(255,215,0,.3);border-radius:28px;padding:50px 42px;text-align:center;max-width:400px;width:90%;box-shadow:0 30px 70px rgba(0,0,0,.7);animation:popIn .4s cubic-bezier(.34,1.56,.64,1); }
+@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.win-box h2 { font-size:2.3rem;font-weight:900;margin-bottom:10px;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent; }
+.win-time { font-size:3rem;font-weight:800;background:linear-gradient(135deg,var(--acc1),var(--acc2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin:16px 0; }
+.win-score-txt { font-size:1rem;color:rgba(255,232,232,.65);margin-bottom:6px; }
+.win-hs { color:var(--gold);font-weight:700;margin-bottom:20px;font-size:.95rem; }
+.win-btns { display:flex;gap:12px;justify-content:center; }
+.win-btn { padding:12px 28px;border-radius:12px;border:none;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s; }
+.win-btn.primary { background:linear-gradient(135deg,var(--acc1),var(--acc2));color:#fff; }
+.win-btn.secondary { background:rgba(255,255,255,.1);color:#ffe8e8;border:1px solid rgba(255,255,255,.15); }
+.win-btn:hover { opacity:.88;transform:translateY(-2px); }
+
+#ref-thumb { position:absolute;bottom:10px;right:10px;width:80px;height:80px;border-radius:10px;object-fit:cover;border:2px solid rgba(255,255,255,.2);opacity:.6;cursor:pointer;transition:opacity .2s,transform .2s; }
+#ref-thumb:hover { opacity:1;transform:scale(1.5);transform-origin:bottom right; }
+
+@media(max-width:640px){
+  .puzzle-area{flex-direction:column;align-items:center}
+  #tray-wrap{max-width:100%;min-height:120px;flex-direction:row;flex-wrap:wrap;overflow-x:auto;overflow-y:hidden;min-width:unset;width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ WIN ══ -->
+<div id="win-overlay">
+  <div class="win-box">
+    <div style="font-size:3rem;margin-bottom:8px">🎉</div>
+    <h2>Puzzle Complete!</h2>
+    <div class="win-score-txt">Time</div>
+    <div class="win-time" id="win-time"></div>
+    <div class="win-score-txt">Score: <strong id="win-score"></strong></div>
+    <div class="win-hs" id="win-hs" style="display:none">🏆 New High Score!</div>
+    <div class="win-btns" style="margin-top:20px">
+      <button class="win-btn secondary" onclick="goGallery()">Pick Another</button>
+      <button class="win-btn primary" onclick="closeWin()">Play Again</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GAME ROOT ══ -->
+<div id="game-root">
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <span class="logo-txt">⬡ Jigsaw Puzzle</span>
+  </div>
+
+  <!-- Score bar -->
+  <div class="score-bar">
+    <div class="sc"><div class="lbl">Score</div><div class="val" id="sc-score">0</div></div>
+    <div class="sc"><div class="lbl">Best Score</div><div class="val gold" id="sc-hs">–</div></div>
+    <div class="sc"><div class="lbl">Pieces Left</div><div class="val" id="sc-left">–</div></div>
+    <div class="sc"><div class="lbl">Difficulty</div><div class="val" id="sc-diff">–</div></div>
+  </div>
+
+  <!-- ═══ GALLERY SCREEN ═══ -->
+  <div id="gallery-screen">
+    <div class="gallery-title">Choose Your Puzzle</div>
+    <div class="gallery-sub">Pick a built-in image or upload your own photo</div>
+
+    <div class="diff-row">
+      <button class="diff-btn active" onclick="selDiff(this,'easy')">Easy (3×3)</button>
+      <button class="diff-btn" onclick="selDiff(this,'medium')">Medium (4×4)</button>
+      <button class="diff-btn" onclick="selDiff(this,'hard')">Hard (5×5)</button>
+      <button class="diff-btn" onclick="selDiff(this,'expert')">Expert (6×6)</button>
+    </div>
+
+    <div class="puzzle-grid" id="builtin-grid"></div>
+
+    <div class="upload-zone" id="upload-zone">
+      <input type="file" accept="image/*" id="file-input" onchange="handleUpload(event)"/>
+      <div class="upload-icon">📸</div>
+      <div class="upload-txt">Upload your own image<br><small style="opacity:.6">JPG, PNG, WebP – any size</small></div>
+      <img id="upload-preview" class="upload-preview"/>
+    </div>
+
+    <button class="start-btn" id="start-btn" onclick="startGame()" disabled>Start Puzzle ▶</button>
+  </div>
+
+  <!-- ═══ PUZZLE SCREEN ═══ -->
+  <div id="puzzle-screen">
+    <div class="puzzle-ctrl">
+      <div class="timer-pill" id="p-timer">00:00</div>
+      <button class="p-btn" onclick="goGallery()">← Gallery</button>
+      <button class="p-btn" onclick="shuffleTray()">🔀 Shuffle</button>
+      <button class="p-btn" onclick="autoSolveOne()">💡 Hint (−100pts)</button>
+      <button class="p-btn danger" onclick="resetPuzzle()">↺ Reset</button>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="p-progress" style="width:0%"></div></div>
+
+    <div class="puzzle-area">
+      <div id="board-wrap">
+        <canvas id="board-canvas"></canvas>
+        <img id="ref-thumb" title="Reference image"/>
+      </div>
+      <div id="tray-wrap">
+        <div class="tray-label">Pieces</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   HIGH SCORE — stored locally, no login needed
+══════════════════════════════════════════════ */
+function hsKey(){ return difficulty + '_' + currentPuzzleKey; }
+
+function getHS(){
+  const data = JSON.parse(localStorage.getItem('mm_jig_hs') || '{}');
+  return data[hsKey()] ?? null;
+}
+
+function saveHS(score){
+  const data = JSON.parse(localStorage.getItem('mm_jig_hs') || '{}');
+  const prev = data[hsKey()] ?? 0;
+  let isNew = false;
+  if(score > prev){ data[hsKey()] = score; isNew = true; }
+  localStorage.setItem('mm_jig_hs', JSON.stringify(data));
+  return isNew;
+}
+
+function refreshHSDisplay(){
+  const hs = getHS();
+  document.getElementById('sc-hs').textContent = hs !== null ? hs : '–';
+}
+
+/* ══════════════════════════════════════════════
+   BUILT-IN PUZZLES
+══════════════════════════════════════════════ */
+const BUILTIN=[
+  {key:'nature',  label:'🌿 Forest',   fn:drawNature},
+  {key:'ocean',   label:'🌊 Ocean',    fn:drawOcean},
+  {key:'sunset',  label:'🌅 Sunset',   fn:drawSunset},
+  {key:'galaxy',  label:'🌌 Galaxy',   fn:drawGalaxy},
+  {key:'city',    label:'🏙️ City',     fn:drawCity},
+  {key:'flowers', label:'🌸 Flowers',  fn:drawFlowers},
+];
+
+function drawNature(ctx,w,h){
+  const g=ctx.createLinearGradient(0,0,0,h);
+  g.addColorStop(0,'#87ceeb');g.addColorStop(.5,'#228b22');g.addColorStop(1,'#1a5c1a');
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#fffacd';ctx.beginPath();ctx.arc(w*.7,h*.2,h*.09,0,Math.PI*2);ctx.fill();
+  for(let i=0;i<7;i++){
+    const x=i*(w/6.5)+20,tw=w*.07,th=h*.35;
+    ctx.fillStyle=`hsl(${120+i*8},60%,${25+i*4}%)`;
+    ctx.beginPath();ctx.moveTo(x,h*.55);ctx.lineTo(x-tw,h*.55+th);ctx.lineTo(x+tw,h*.55+th);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#5c3317';ctx.fillRect(x-tw*.2,h*.55+th,tw*.4,h*.1);
+  }
+}
+function drawOcean(ctx,w,h){
+  const g=ctx.createLinearGradient(0,0,0,h);
+  g.addColorStop(0,'#001a33');g.addColorStop(.4,'#003d7a');g.addColorStop(1,'#006994');
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='rgba(255,255,255,.12)';
+  for(let i=0;i<12;i++){
+    ctx.beginPath();ctx.ellipse(Math.random()*w,h*.3+Math.random()*h*.5,w*.12,h*.015,0,0,Math.PI*2);ctx.fill();
+  }
+  ctx.fillStyle='#fffde7';ctx.beginPath();ctx.arc(w*.15,h*.12,h*.07,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.06)';
+  for(let i=0;i<60;i++){ctx.fillRect(Math.random()*w,Math.random()*h*.4,1.5,1.5);}
+}
+function drawSunset(ctx,w,h){
+  const g=ctx.createLinearGradient(0,0,0,h);
+  g.addColorStop(0,'#1a1a2e');g.addColorStop(.35,'#e05b2a');g.addColorStop(.55,'#f4a261');g.addColorStop(.7,'#e76f51');g.addColorStop(1,'#264653');
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#ffcd00';ctx.beginPath();ctx.arc(w*.5,h*.52,h*.13,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#0d1117';ctx.beginPath();ctx.moveTo(0,h*.7);
+  for(let x=0;x<=w;x+=w/30){ctx.lineTo(x,h*.65+Math.sin(x/30)*h*.04+Math.random()*h*.02);}
+  ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(255,180,50,.15)';ctx.fillRect(w*.35,h*.52,w*.3,h*.48);
+}
+function drawGalaxy(ctx,w,h){
+  ctx.fillStyle='#020408';ctx.fillRect(0,0,w,h);
+  for(let i=0;i<300;i++){
+    const a=Math.random();ctx.fillStyle=`rgba(255,255,255,${.2+a*.8})`;
+    ctx.beginPath();ctx.arc(Math.random()*w,Math.random()*h,a*1.5,0,Math.PI*2);ctx.fill();
+  }
+  const g=ctx.createRadialGradient(w*.5,h*.5,0,w*.5,h*.5,w*.4);
+  g.addColorStop(0,'rgba(100,60,200,.6)');g.addColorStop(.4,'rgba(30,20,80,.3)');g.addColorStop(1,'transparent');
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  const g2=ctx.createRadialGradient(w*.5,h*.5,0,w*.5,h*.5,w*.15);
+  g2.addColorStop(0,'rgba(255,220,100,.7)');g2.addColorStop(1,'transparent');
+  ctx.fillStyle=g2;ctx.fillRect(0,0,w,h);
+}
+function drawCity(ctx,w,h){
+  const g=ctx.createLinearGradient(0,0,0,h);
+  g.addColorStop(0,'#0a0a1a');g.addColorStop(.6,'#1a1a3e');g.addColorStop(1,'#2a2a5e');
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  for(let i=0;i<80;i++){ctx.fillStyle='rgba(255,255,255,.7)';ctx.fillRect(Math.random()*w,Math.random()*h*.5,1.5,1.5);}
+  const cols=['#1a1a2e','#16213e','#0f3460','#1b2838'];
+  for(let i=0;i<18;i++){
+    const bw=w/22+Math.random()*w/16,bh=h*.2+Math.random()*h*.45,bx=i*(w/17)-5;
+    ctx.fillStyle=cols[i%cols.length];ctx.fillRect(bx,h-bh,bw,bh);
+    ctx.fillStyle='rgba(255,240,100,.35)';
+    for(let wy=h-bh+8;wy<h-8;wy+=12)for(let wx=bx+4;wx<bx+bw-4;wx+=10){
+      if(Math.random()>.4)ctx.fillRect(wx,wy,5,7);
+    }
+  }
+}
+function drawFlowers(ctx,w,h){
+  const g=ctx.createLinearGradient(0,0,0,h);
+  g.addColorStop(0,'#a8edea');g.addColorStop(1,'#fed6e3');
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  const petals=['#ff6b9d','#ff8e53','#ffe66d','#a8ff78','#7b2ff7','#fc466b'];
+  for(let f=0;f<18;f++){
+    const fx=Math.random()*w,fy=Math.random()*h,fr=w*.05+Math.random()*w*.06;
+    const col=petals[Math.floor(Math.random()*petals.length)];
+    for(let p=0;p<6;p++){
+      ctx.fillStyle=col;ctx.beginPath();
+      const a=p*(Math.PI/3),ex=fx+Math.cos(a)*fr,ey=fy+Math.sin(a)*fr;
+      ctx.ellipse(ex,ey,fr*.45,fr*.2,a,0,Math.PI*2);ctx.fill();
+    }
+    ctx.fillStyle='#fff176';ctx.beginPath();ctx.arc(fx,fy,fr*.25,0,Math.PI*2);ctx.fill();
+  }
+}
+
+function makeBuiltinImg(item,size=200){
+  const c=document.createElement('canvas');c.width=size;c.height=size;
+  item.fn(c.getContext('2d'),size,size);return c.toDataURL();
+}
+
+/* ══════════════════════════════════════════════
+   GALLERY
+══════════════════════════════════════════════ */
+let difficulty='easy';
+let currentPuzzleKey='';
+let currentImageSrc='';
+let uploadedSrc='';
+
+const DIFF_GRID={easy:3,medium:4,hard:5,expert:6};
+
+function selDiff(btn,d){
+  difficulty=d;
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sc-diff').textContent=d.charAt(0).toUpperCase()+d.slice(1);
+  refreshHSDisplay();
+}
+
+function buildGallery(){
+  const grid=document.getElementById('builtin-grid');grid.innerHTML='';
+  BUILTIN.forEach(item=>{
+    const img=makeBuiltinImg(item);
+    const card=document.createElement('div');card.className='puzzle-card';card.dataset.key=item.key;
+    card.innerHTML=`<img src="${img}" alt="${item.label}"/><div class="card-label">${item.label}</div>`;
+    card.onclick=()=>{
+      document.querySelectorAll('.puzzle-card').forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      currentPuzzleKey=item.key;currentImageSrc=img;uploadedSrc='';
+      document.getElementById('upload-preview').style.display='none';
+      document.getElementById('start-btn').disabled=false;
+      refreshHSDisplay();
+    };
+    grid.appendChild(card);
+  });
+}
+
+function handleUpload(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    uploadedSrc=ev.target.result;
+    currentPuzzleKey='custom_'+file.name;
+    currentImageSrc=uploadedSrc;
+    document.querySelectorAll('.puzzle-card').forEach(c=>c.classList.remove('selected'));
+    const prev=document.getElementById('upload-preview');
+    prev.src=uploadedSrc;prev.style.display='block';
+    document.getElementById('start-btn').disabled=false;
+    refreshHSDisplay();
+  };reader.readAsDataURL(file);
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const uz=document.getElementById('upload-zone');
+  uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('drag');});
+  uz.addEventListener('dragleave',()=>uz.classList.remove('drag'));
+  uz.addEventListener('drop',e=>{
+    e.preventDefault();uz.classList.remove('drag');
+    const f=e.dataTransfer.files[0];
+    if(f){document.getElementById('file-input').files=e.dataTransfer.files;handleUpload({target:{files:e.dataTransfer.files}});}
+  });
+});
+
+/* ══════════════════════════════════════════════
+   PUZZLE ENGINE
+══════════════════════════════════════════════ */
+let COLS=3,ROWS=3,TOTAL=9;
+let pieces=[];
+let trayOrder=[];
+let boardSlots=[];
+let gameImg=null;
+let score=0,timerSec=0,timerInt=null,gameActive=false;
+let dragging=null;
+
+const BOARD_MAX=520;
+let cellW=0,cellH=0,boardW=0,boardH=0;
+
+function startGame(){
+  if(!currentImageSrc)return;
+  COLS=ROWS=DIFF_GRID[difficulty];TOTAL=COLS*ROWS;
+  score=0;timerSec=0;gameActive=true;
+  document.getElementById('sc-score').textContent=0;
+  document.getElementById('sc-diff').textContent=difficulty.charAt(0).toUpperCase()+difficulty.slice(1);
+
+  document.getElementById('gallery-screen').style.display='none';
+  document.getElementById('puzzle-screen').style.display='block';
+
+  const img=new Image();
+  img.onload=()=>{
+    gameImg=img;
+    setupBoard();buildPieces();renderBoard();renderTray();updateProgress();startTimer();refreshHSDisplay();
+  };
+  img.src=currentImageSrc;
+}
+
+function setupBoard(){
+  const asp=gameImg.height/gameImg.width;
+  boardW=Math.min(BOARD_MAX,500);boardH=Math.round(boardW*asp);
+  cellW=boardW/COLS;cellH=boardH/ROWS;
+  const bc=document.getElementById('board-canvas');
+  bc.width=boardW;bc.height=boardH;
+  document.getElementById('board-wrap').style.width=boardW+'px';
+  document.getElementById('ref-thumb').src=currentImageSrc;
+}
+
+function buildPieces(){
+  boardSlots=Array(TOTAL).fill(null);pieces=[];
+  const ids=Array.from({length:TOTAL},(_,i)=>i);
+  trayOrder=[...ids].sort(()=>Math.random()-.5);
+  ids.forEach(id=>{
+    const c=id%COLS,r=Math.floor(id/COLS);
+    const pc=document.createElement('canvas');pc.width=cellW;pc.height=cellH;
+    const pctx=pc.getContext('2d');
+    pctx.drawImage(gameImg,c*cellW*(gameImg.width/boardW),r*cellH*(gameImg.height/boardH),cellW*(gameImg.width/boardW),cellH*(gameImg.height/boardH),0,0,cellW,cellH);
+    pieces.push({id,correctCol:c,correctRow:r,currentSlot:null,placed:false,canvas:pc});
+  });
+}
+
+function renderBoard(){
+  const bc=document.getElementById('board-canvas');const ctx=bc.getContext('2d');
+  ctx.clearRect(0,0,boardW,boardH);
+  ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;
+  for(let c=0;c<=COLS;c++){ctx.beginPath();ctx.moveTo(c*cellW,0);ctx.lineTo(c*cellW,boardH);ctx.stroke();}
+  for(let r=0;r<=ROWS;r++){ctx.beginPath();ctx.moveTo(0,r*cellH);ctx.lineTo(boardW,r*cellH);ctx.stroke();}
+  boardSlots.forEach((pid,slot)=>{
+    const c=slot%COLS,r=Math.floor(slot/COLS);
+    if(pid===null){
+      ctx.strokeStyle='rgba(255,255,255,.07)';ctx.setLineDash([4,4]);ctx.lineWidth=1;
+      ctx.strokeRect(c*cellW+2,r*cellH+2,cellW-4,cellH-4);ctx.setLineDash([]);
+    } else {
+      const p=pieces.find(p=>p.id===pid);
+      if(p)ctx.drawImage(p.canvas,c*cellW,r*cellH,cellW,cellH);
+    }
+  });
+}
+
+function renderTray(){
+  const tray=document.getElementById('tray-wrap');
+  Array.from(tray.querySelectorAll('.tray-piece')).forEach(el=>el.remove());
+  const thumbSize=Math.min(110,cellW*1.1);
+  trayOrder.forEach(pid=>{
+    const p=pieces.find(p=>p.id===pid);
+    if(!p||p.placed)return;
+    const tc=document.createElement('canvas');
+    tc.width=thumbSize;tc.height=thumbSize*(cellH/cellW);
+    tc.className='tray-piece';tc.dataset.pid=pid;
+    tc.getContext('2d').drawImage(p.canvas,0,0,tc.width,tc.height);
+    tc.draggable=true;
+    tc.addEventListener('dragstart',e=>{
+      dragging={pieceId:pid,src:'tray'};
+      tc.classList.add('dragging-src');
+      e.dataTransfer.setData('text/plain',pid);
+    });
+    tc.addEventListener('dragend',()=>{tc.classList.remove('dragging-src');});
+    tc.addEventListener('click',()=>tapTrayPiece(pid));
+    tray.appendChild(tc);
+  });
+}
+
+let selectedTrayPiece=null;
+function tapTrayPiece(pid){
+  selectedTrayPiece=pid;
+  document.querySelectorAll('.tray-piece').forEach(t=>t.style.outline='none');
+  const el=document.querySelector(`.tray-piece[data-pid="${pid}"]`);
+  if(el)el.style.outline='2px solid #218fa0';
+}
+
+document.getElementById('board-canvas').addEventListener('dragover',e=>{e.preventDefault();});
+document.getElementById('board-canvas').addEventListener('drop',e=>{
+  e.preventDefault();
+  const pid=parseInt(e.dataTransfer.getData('text/plain'));
+  const rect=e.currentTarget.getBoundingClientRect();
+  const x=e.clientX-rect.left,y=e.clientY-rect.top;
+  const slot=Math.floor(x/cellW)+Math.floor(y/cellH)*COLS;
+  placePiece(pid,slot);
+});
+document.getElementById('board-canvas').addEventListener('click',e=>{
+  if(selectedTrayPiece===null)return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  const x=e.clientX-rect.left,y=e.clientY-rect.top;
+  const slot=Math.floor(x/cellW)+Math.floor(y/cellH)*COLS;
+  placePiece(selectedTrayPiece,slot);
+  selectedTrayPiece=null;
+});
+
+function placePiece(pid,slot){
+  if(slot<0||slot>=TOTAL)return;
+  if(boardSlots[slot]!==null)return;
+  const p=pieces.find(p=>p.id===pid);
+  if(!p||p.placed)return;
+  boardSlots[slot]=pid;p.currentSlot=slot;p.placed=true;
+  const isCorrect=(slot%COLS===p.correctCol&&Math.floor(slot/COLS)===p.correctRow);
+  const diffMult={easy:1,medium:1.5,hard:2,expert:3}[difficulty];
+  const timeBonus=Math.max(0,300-timerSec);
+  const pts=Math.round((isCorrect?150:30)*(1+timeBonus/300)*diffMult);
+  score+=pts;document.getElementById('sc-score').textContent=score;
+  if(!isCorrect){
+    setTimeout(()=>{boardSlots[slot]=null;p.placed=false;p.currentSlot=null;renderBoard();renderTray();},600);
+  }
+  renderBoard();updateProgress();
+  if(isCorrect){trayOrder=trayOrder.filter(id=>id!==pid);renderTray();checkWin();}
+}
+
+function updateProgress(){
+  const placed=pieces.filter(p=>p.placed).length;
+  document.getElementById('sc-left').textContent=TOTAL-placed;
+  document.getElementById('p-progress').style.width=(placed/TOTAL*100)+'%';
+}
+
+function shuffleTray(){trayOrder=trayOrder.sort(()=>Math.random()-.5);renderTray();}
+
+function autoSolveOne(){
+  const unplaced=pieces.filter(p=>!p.placed);if(!unplaced.length)return;
+  const p=unplaced[Math.floor(Math.random()*unplaced.length)];
+  const slot=p.correctRow*COLS+p.correctCol;
+  if(boardSlots[slot]!==null)return;
+  score=Math.max(0,score-100);document.getElementById('sc-score').textContent=score;
+  placePiece(p.id,slot);
+}
+
+function resetPuzzle(){
+  buildPieces();renderBoard();renderTray();
+  score=0;timerSec=0;document.getElementById('sc-score').textContent=0;updateProgress();
+}
+
+function checkWin(){
+  const allPlaced=pieces.every(p=>p.placed);if(!allPlaced)return;
+  stopTimer();gameActive=false;
+  const isNew=saveHS(score);refreshHSDisplay();
+  document.getElementById('win-time').textContent=formatTime(timerSec);
+  document.getElementById('win-score').textContent=score;
+  document.getElementById('win-hs').style.display=isNew?'block':'none';
+  document.getElementById('win-overlay').classList.add('show');
+}
+
+function closeWin(){document.getElementById('win-overlay').classList.remove('show');startGame();}
+
+function goGallery(){
+  stopTimer();gameActive=false;
+  document.getElementById('win-overlay').classList.remove('show');
+  document.getElementById('puzzle-screen').style.display='none';
+  document.getElementById('gallery-screen').style.display='block';
+}
+
+function startTimer(){
+  stopTimer();
+  timerInt=setInterval(()=>{timerSec++;document.getElementById('p-timer').textContent=formatTime(timerSec);},1000);
+}
+function stopTimer(){clearInterval(timerInt);}
+function formatTime(s){return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
+
+window.addEventListener('load',()=>{
+  buildGallery();
+  document.getElementById('sc-diff').textContent='Easy';
+  refreshHSDisplay();
+});
+</script>
+</body>
+</html>

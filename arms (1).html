@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Motion Mentor | Arm Exercise Library</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #a855f7;
+            --accent-dark: #8b3fdb;
+            --bg: #080808;
+            --card-bg: #101010;
+            --border: #1e1e1e;
+            --border-hover: #a855f7;
+            --text: #e8e8e8;
+            --muted: #888;
+            --dim: #444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', system-ui, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        .app-header {
+            position: relative;
+            padding: 3rem 2.5rem 2rem;
+            background: linear-gradient(160deg, #100a1a 0%, #080808 60%);
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .app-header::before {
+            content: 'ARMS';
+            position: absolute;
+            right: -1rem;
+            top: -1.5rem;
+            font-family: 'Syne', sans-serif;
+            font-size: 9rem;
+            font-weight: 800;
+            color: rgba(168,85,247,0.04);
+            letter-spacing: -4px;
+            pointer-events: none;
+            user-select: none;
+        }
+        .header-eyebrow {
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+        }
+        .app-header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.05;
+            color: #fff;
+        }
+        .app-header h1 span { color: var(--accent); }
+        .header-sub {
+            margin-top: 0.8rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+            max-width: 460px;
+        }
+        .live-dot {
+            display: inline-block;
+            width: 7px; height: 7px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s ease infinite;
+            vertical-align: middle;
+        }
+        @keyframes pulse {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        /* ── SEARCH ─────────────────────────────── */
+        .search-wrapper {
+            padding: 1.4rem 2.5rem 0.4rem;
+            position: relative;
+            max-width: 780px;
+            display: none;
+        }
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            color: var(--muted);
+            font-size: 1rem;
+            pointer-events: none;
+            z-index: 1;
+        }
+        #search_input {
+            width: 100%;
+            background: #111;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 0.8rem 3rem 0.8rem 2.8rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        #search_input::placeholder { color: var(--dim); }
+        #search_input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(168,85,247,0.08);
+        }
+        .search-clear {
+            position: absolute;
+            right: 0.9rem;
+            background: #222;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 22px; height: 22px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 0.65rem;
+            transition: all 0.15s;
+        }
+        .search-clear:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .search-clear.visible { display: flex; }
+        .search-stats {
+            margin-top: 0.5rem;
+            font-size: 0.72rem;
+            color: var(--dim);
+            padding-left: 0.2rem;
+            min-height: 1.2rem;
+        }
+        .search-stats .hl { color: var(--accent); font-weight: 600; }
+
+        #search_results_section { display: none; }
+        #search_results_section .core_Head { padding-top: 1rem; }
+
+        #no_results_msg {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2rem;
+            text-align: center;
+            gap: 0.8rem;
+        }
+        .no-results-icon { font-size: 2.5rem; opacity: 0.4; }
+        .no-results-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; color: var(--muted); }
+        .no-results-sub { font-size: 0.8rem; color: var(--dim); max-width: 320px; }
+        .no-results-query {
+            background: #181818;
+            border: 1px dashed #303030;
+            border-radius: 8px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.78rem;
+            color: var(--accent);
+            font-family: monospace;
+        }
+
+        #related_section { display: none; }
+
+        /* ── SECTION HEAD ─── */
+        .core_Head {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 2.5rem 2.5rem 0.8rem;
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--text);
+        }
+        .core_Head .pill {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: #151515;
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 0.35rem 0.9rem;
+            font-size: 0.75rem;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 400;
+            color: var(--muted);
+        }
+        .core_Head .pill .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+        /* ── GRID ─── */
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 1.4rem;
+            padding: 1rem 2.5rem 2rem;
+        }
+
+        /* ── CARD ─── */
+        .exercise-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .exercise-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 24px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(168,85,247,0.08);
+        }
+        .exercise-card.search-match { border-color: rgba(168,85,247,0.35); }
+
+        .card-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .card-media {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #151515;
+            overflow: hidden;
+        }
+        .img_style {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            background: whitesmoke;
+            transition: transform 0.3s ease;
+        }
+        .exercise-card:hover .img_style { transform: scale(1.04); }
+        .card-media-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(8,8,8,0.7) 0%, transparent 55%);
+            pointer-events: none;
+        }
+        .card-diff-badge {
+            position: absolute;
+            top: 10px; left: 10px;
+            background: rgba(8,8,8,0.82);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 3px 10px;
+            font-size: 0.65rem;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+        }
+
+        .card-content {
+            padding: 1rem 1.1rem 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .form_name {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.25;
+        }
+        .card-meta { display: flex; flex-wrap: wrap; gap: 0.3rem 0.6rem; }
+        .text_left {
+            font-size: 0.68rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .equipement { color: var(--accent); font-weight: 500; }
+        .Focused_Muscles { color: var(--text); font-weight: 400; }
+        .Click_image {
+            margin-top: auto;
+            padding-top: 0.6rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.65rem;
+            color: var(--dim);
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
+        #loading_msg {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 40vh;
+            gap: 1.2rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+        .spinner {
+            width: 44px; height: 44px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #error_msg {
+            max-width: 640px;
+            margin: 3rem auto;
+            background: #120e0e;
+            border: 1px solid #3a1c1c;
+            border-left: 4px solid #ff5050;
+            border-radius: 18px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .retry-btn {
+            margin-top: 1.2rem;
+            background: var(--accent);
+            border: none;
+            color: #080808;
+            font-weight: 700;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            padding: 0.6rem 1.5rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .retry-btn:hover { background: #c084fc; }
+
+        /* ── MAIN MODAL ─── */
+        #steps_modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal_inner {
+            max-width: 680px;
+            width: 100%;
+            max-height: 92vh;
+            overflow-y: auto;
+            background: #0e0e0e;
+            border: 1px solid #252525;
+            border-radius: 24px;
+            padding: 1.8rem 2rem 2.2rem;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.7);
+            scrollbar-width: thin;
+            scrollbar-color: #2a2a2a transparent;
+        }
+        .modal_inner::-webkit-scrollbar { width: 4px; }
+        .modal_inner::-webkit-scrollbar-track { background: transparent; }
+        .modal_inner::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
+
+        #close_modal_btn {
+            position: sticky;
+            top: 0;
+            float: right;
+            background: #1a1a1a;
+            border: 1px solid #2e2e2e;
+            color: #aaa;
+            padding: 5px 16px;
+            border-radius: 30px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            z-index: 2;
+        }
+        #close_modal_btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        .modal-img {
+            width: 100%;
+            border-radius: 16px;
+            display: block;
+            margin: 0.5rem 0 1.2rem;
+            background: whitesmoke;
+        }
+        .modal-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1.2;
+            margin-bottom: 0.3rem;
+        }
+        .modal-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+        }
+        .modal-chip {
+            background: #181818;
+            border: 1px solid #262626;
+            border-radius: 30px;
+            padding: 3px 12px;
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+        .modal-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+        .info-cell {
+            background: #141414;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.7rem 0.9rem;
+        }
+        .info-cell .info-label {
+            font-size: 0.62rem;
+            color: var(--dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+        .info-cell .info-val { font-size: 0.82rem; color: var(--text); font-weight: 500; }
+
+        .steps-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.8px;
+            margin: 1.4rem 0 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .steps-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        .step-item {
+            display: flex;
+            gap: 0.9rem;
+            margin-bottom: 0.9rem;
+            align-items: flex-start;
+        }
+        .step-num {
+            flex-shrink: 0;
+            width: 26px; height: 26px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'Syne', sans-serif;
+        }
+        .step-content .step-focus {
+            font-size: 0.68rem;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+        .step-content .step-text { font-size: 0.84rem; color: #c4c4c4; line-height: 1.55; }
+
+        .mistakes-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #ff9d3b;
+            letter-spacing: 0.8px;
+            margin: 1.4rem 0 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mistakes-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        .mistake-item {
+            display: flex;
+            gap: 0.7rem;
+            align-items: flex-start;
+            margin-bottom: 0.6rem;
+            font-size: 0.83rem;
+            color: #bbb;
+        }
+        .mistake-icon {
+            flex-shrink: 0;
+            width: 18px; height: 18px;
+            background: rgba(255,157,59,0.12);
+            border: 1px solid rgba(255,157,59,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: #ff9d3b;
+            margin-top: 1px;
+        }
+
+        hr { border-color: #252525; margin: 1rem 0; }
+
+        /* ── ANALYZE POSTURE BUTTON (inside modal) ── */
+        .analyze-btn-wrap {
+            margin: 1.6rem 0 0.4rem;
+            display: flex;
+            justify-content: center;
+        }
+        .btn-analyze-posture {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #a855f7 0%, #c084fc 100%);
+            border: none;
+            color: #fff;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            padding: 0.85rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 24px rgba(168,85,247,0.35);
+            width: 100%;
+            justify-content: center;
+        }
+        .btn-analyze-posture:hover {
+            opacity: 0.92;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(168,85,247,0.5);
+        }
+        .btn-analyze-posture:active { transform: scale(0.98); }
+        .btn-analyze-icon { font-size: 1.15rem; }
+
+        /* ── CV ANALYZER OVERLAY ─── */
+        #cv-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #0b0b0f;
+            z-index: 20000;
+            overflow-y: auto;
+        }
+        .cv-topbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.9rem 1.2rem;
+            background: #110f1a;
+            border-bottom: 1px solid #221e30;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .cv-back-btn {
+            background: transparent;
+            border: 1px solid rgba(168,85,247,0.4);
+            color: #c084fc;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.5rem 1.1rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: background 0.15s;
+            flex-shrink: 0;
+        }
+        .cv-back-btn:hover { background: rgba(168,85,247,0.12); }
+        .cv-topbar-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cv-topbar-title span { color: #a855f7; }
+
+        .cv-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        @media (max-width: 760px) { .cv-layout { grid-template-columns: 1fr; } }
+
+        .cv-left { display: flex; flex-direction: column; gap: 0.85rem; }
+        .cv-right { display: flex; flex-direction: column; gap: 0.85rem; }
+
+        .cv-ex-panel {
+            background: #110f1a;
+            border: 1px solid #221e30;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .cv-ex-header {
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid #221e30;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .cv-ex-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .cv-ex-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+        .cv-ex-badge {
+            font-size: 0.58rem;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            background: rgba(168,85,247,0.12);
+            color: #c084fc;
+            border: 1px solid rgba(168,85,247,0.25);
+        }
+        .cv-ex-body { display: grid; grid-template-columns: 160px 1fr; }
+        @media (max-width: 500px) { .cv-ex-body { grid-template-columns: 1fr; } }
+        .cv-gif-wrap {
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 150px;
+            border-right: 1px solid #221e30;
+            position: relative;
+        }
+        @media (max-width: 500px) { .cv-gif-wrap { border-right: none; border-bottom: 1px solid #221e30; } }
+        .cv-gif { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .cv-gif-placeholder {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 6px; color: #6b5f85; font-size: 0.72rem;
+        }
+        .cv-steps-wrap { padding: 0.65rem 0.85rem; overflow-y: auto; max-height: 220px; }
+        .cv-steps-title {
+            font-size: 0.58rem;
+            color: #6b5f85;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cv-steps-title::after { content: ''; flex: 1; height: 1px; background: #221e30; }
+        .cv-step-row {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #221e30;
+        }
+        .cv-step-row:last-child { border-bottom: none; }
+        .cv-step-row.cv-active { background: rgba(168,85,247,0.05); border-radius: 8px; padding: 0.4rem 0.35rem; margin: 0 -0.35rem; }
+        .cv-step-num {
+            flex-shrink: 0;
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: #1a1528;
+            border: 1px solid #221e30;
+            font-size: 0.6rem;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b5f85;
+            transition: all 0.25s;
+        }
+        .cv-step-row.cv-active .cv-step-num { background: #a855f7; border-color: #a855f7; color: #fff; }
+        .cv-step-focus { font-size: 0.58rem; color: #a855f7; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px; }
+        .cv-step-text { font-size: 0.72rem; color: #d8d0e8; line-height: 1.45; }
+
+        /* camera */
+        .cv-vid-wrap {
+            position: relative;
+            width: 100%;
+            background: #05040a;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid #221e30;
+            aspect-ratio: 4/3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cv-vid-wrap video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        .cv-vid-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .cv-vid-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b5f85;
+            font-size: 0.8rem;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .cv-vid-icon { font-size: 2.5rem; opacity: 0.3; }
+        .conf-overlay-cv {
+            position: absolute;
+            bottom: 10px; left: 10px; right: 10px;
+            z-index: 10;
+            display: none;
+            gap: 4px;
+            pointer-events: none;
+        }
+        .conf-bar-wrap-cv { flex: 1; background: rgba(0,0,0,.5); border-radius: 4px; overflow: hidden; height: 4px; }
+        .conf-bar-fill-cv { height: 100%; border-radius: 4px; transition: width 0.1s linear; }
+
+        /* controls */
+        .cv-controls {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .cv-btn-start {
+            background: #a855f7;
+            border: none;
+            color: #fff;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.6rem 1.4rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .cv-btn-start:hover { opacity: 0.88; transform: translateY(-1px); }
+        .cv-btn-start:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+        .cv-btn-reset {
+            background: transparent;
+            border: 1px solid rgba(168,85,247,0.4);
+            color: #c084fc;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.6rem 1.1rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .cv-btn-reset:hover { background: rgba(168,85,247,0.08); }
+        .cv-status-txt { font-size: 0.72rem; color: #6b5f85; margin-left: 4px; }
+        .cv-conf-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.63rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid #221e30;
+            background: #1a1528;
+            transition: all 0.2s;
+            margin-left: auto;
+        }
+        .cv-conf-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+        /* phase strip */
+        .cv-phase-strip { display: flex; gap: 6px; }
+        .cv-phase-pill {
+            flex: 1;
+            text-align: center;
+            padding: 6px 4px;
+            border-radius: 10px;
+            font-size: 0.68rem;
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            border: 1px solid #221e30;
+            color: #6b5f85;
+            background: #110f1a;
+            transition: all 0.25s;
+        }
+        .cv-phase-pill.active { background: rgba(168,85,247,0.12); color: #c084fc; border-color: rgba(168,85,247,0.35); }
+        .cv-phase-pill.warn-active { background: rgba(255,184,63,0.1); color: #ffb83f; border-color: rgba(255,184,63,0.35); }
+
+        /* metrics */
+        .cv-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 0.55rem;
+        }
+        .cv-m-card {
+            background: #110f1a;
+            border: 1px solid #221e30;
+            border-radius: 14px;
+            padding: 0.75rem 0.6rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .cv-m-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+        .cv-m-card.reps::after { background: #a855f7; }
+        .cv-m-card.angle::after { background: #5b8cff; }
+        .cv-m-card.score::after { background: #c084fc; }
+        .cv-m-card.phase-c::after { background: #ffb83f; }
+        .cv-m-label { font-size: 0.54rem; color: #6b5f85; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 0.3rem; }
+        .cv-m-value { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; color: #e8e0f8; line-height: 1; }
+        .cv-m-value.small { font-size: 0.9rem; padding-top: 0.25rem; }
+
+        /* alerts */
+        .cv-alert-strip { min-height: 44px; }
+        .cv-alert {
+            padding: 8px 10px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            font-size: 0.75rem;
+            border: 1px solid;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            animation: fadeUp 0.2s ease;
+        }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .cv-alert.good { background: rgba(168,85,247,0.07); color: #d4aaff; border-color: rgba(168,85,247,0.25); }
+        .cv-alert.warn { background: rgba(255,184,63,0.07); color: #fde68a; border-color: rgba(255,184,63,0.3); }
+        .cv-alert.err { background: rgba(255,87,87,0.07); color: #fca5a5; border-color: rgba(255,87,87,0.25); }
+        .cv-alert-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+        .cv-alert.good .cv-alert-dot { background: #a855f7; }
+        .cv-alert.warn .cv-alert-dot { background: #ffb83f; }
+        .cv-alert.err .cv-alert-dot { background: #ff5757; }
+
+        .cv-model-badge {
+            font-size: 0.7rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #1a1528;
+            border: 1px solid #221e30;
+            color: #6b5f85;
+            transition: all 0.3s;
+        }
+        .cv-model-badge.ready { border-color: rgba(168,85,247,0.3); color: #c084fc; background: rgba(168,85,247,0.08); }
+
+        .cv-debug-bar {
+            font-size: 0.6rem;
+            color: #6b5f85;
+            font-family: monospace;
+            padding: 0.35rem 0.65rem;
+            background: #110f1a;
+            border-radius: 8px;
+            border: 1px solid #221e30;
+            min-height: 20px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 640px) {
+            .exercise-grid { padding: 0.8rem 1rem 1.5rem; gap: 1rem; }
+            .core_Head { padding: 1.8rem 1rem 0.6rem; }
+            .app-header { padding: 2rem 1.2rem 1.5rem; }
+            .modal_inner { padding: 1.2rem; }
+            .modal-info-grid { grid-template-columns: 1fr; }
+            .search-wrapper { padding: 1.2rem 1rem 0.4rem; }
+            .cv-metrics { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <div class="header-eyebrow"><span class="live-dot"></span>Motion Mentor · Dynamic Exercise Library</div>
+    <h1>💪 ARM <span>LAB</span></h1>
+    <p class="header-sub">Complete arms &amp; shoulders library · tap any card for full instructions, steps &amp; AI posture analysis</p>
+</div>
+
+<div class="search-wrapper" id="search_wrapper">
+    <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search_input" placeholder="Search exercises, muscles, equipment..." autocomplete="off" spellcheck="false" />
+        <button class="search-clear" id="search_clear" title="Clear search">✕</button>
+    </div>
+    <div class="search-stats" id="search_stats"></div>
+</div>
+
+<div id="loading_msg">
+    <div class="spinner"></div>
+    <div style="color:#aaa;">Fetching exercises from repository…</div>
+    <div style="font-size:0.75rem;color:#555;">(arms.xml · public repo)</div>
+</div>
+
+<div id="error_msg" style="display:none;"></div>
+
+<div id="search_results_section">
+    <h2 class="core_Head">
+        🔎 SEARCH RESULTS
+        <span class="pill"><span class="dot" style="background:var(--accent);"></span><span id="result_count_label">0 found</span></span>
+    </h2>
+    <div class="exercise-grid" id="grid_search_results"></div>
+</div>
+
+<div id="no_results_msg">
+    <div class="no-results-icon">💪</div>
+    <div class="no-results-title">No exact match found</div>
+    <div class="no-results-sub">No exercise matched <span class="no-results-query" id="no_results_query"></span></div>
+    <div style="font-size:0.75rem;color:var(--dim);margin-top:0.3rem;">Try searching by muscle group, equipment, or exercise type</div>
+</div>
+
+<div id="related_section">
+    <h2 class="core_Head">
+        💡 RELATED EXERCISES
+        <span class="pill"><span class="dot" style="background:#fb923c;"></span>Similar matches</span>
+    </h2>
+    <div class="exercise-grid" id="grid_related"></div>
+</div>
+
+<div id="normal_sections">
+    <h2 class="core_Head" id="head_Beginner" style="display:none;">
+        🟢 BEGINNER
+        <span class="pill"><span class="dot" style="background:#4ade80;"></span>Foundation level</span>
+    </h2>
+    <div class="exercise-grid" id="grid_Beginner"></div>
+
+    <h2 class="core_Head" id="head_Novice" style="display:none;">
+        ⚪ NOVICE
+        <span class="pill"><span class="dot" style="background:#aaaaaa;"></span>Building basics</span>
+    </h2>
+    <div class="exercise-grid" id="grid_Novice"></div>
+
+    <h2 class="core_Head" id="head_Intermediate" style="display:none;">
+        🟡 INTERMEDIATE
+        <span class="pill"><span class="dot" style="background:#f5e03b;"></span>Building strength</span>
+    </h2>
+    <div class="exercise-grid" id="grid_Intermediate"></div>
+
+    <h2 class="core_Head" id="head_Advanced" style="display:none;">
+        🟠 ADVANCED
+        <span class="pill"><span class="dot" style="background:#fb923c;"></span>Peak performance</span>
+    </h2>
+    <div class="exercise-grid" id="grid_Advanced"></div>
+
+    <h2 class="core_Head" id="head_Expert" style="display:none;">
+        🔴 EXPERT
+        <span class="pill"><span class="dot" style="background:#f87171;"></span>Elite level</span>
+    </h2>
+    <div class="exercise-grid" id="grid_Expert"></div>
+</div>
+
+<!-- EXERCISE DETAIL MODAL -->
+<div id="steps_modal">
+    <div class="modal_inner">
+        <button id="close_modal_btn" onclick="window.closeModalFunc()">✕ CLOSE</button>
+        <div id="modal_body"></div>
+    </div>
+</div>
+
+<!-- CV ANALYZER OVERLAY -->
+<div id="cv-overlay">
+    <div class="cv-topbar">
+        <button class="cv-back-btn" onclick="window.closeCVAnalyzer()">← Back</button>
+        <div class="cv-topbar-title" id="cv-topbar-title">Posture <span>Analyzer</span></div>
+        <span class="cv-model-badge" id="cv-model-status">Loading…</span>
+    </div>
+
+    <div class="cv-layout">
+        <div class="cv-left">
+            <div class="cv-vid-wrap" id="cv-vid-wrap">
+                <div class="cv-vid-placeholder" id="cv-placeholder">
+                    <div class="cv-vid-icon">◎</div>
+                    <div>Camera not started</div>
+                </div>
+                <video id="cv-video" playsinline muted autoplay></video>
+                <canvas id="cv-overlay-canvas"></canvas>
+                <div class="conf-overlay-cv" id="cv-confOverlay" style="display:flex;">
+                    <div class="conf-bar-wrap-cv"><div class="conf-bar-fill-cv" id="cv-cb-shoulder" style="background:#a855f7;width:0%"></div></div>
+                    <div class="conf-bar-wrap-cv"><div class="conf-bar-fill-cv" id="cv-cb-elbow" style="background:#5b8cff;width:0%"></div></div>
+                    <div class="conf-bar-wrap-cv"><div class="conf-bar-fill-cv" id="cv-cb-wrist" style="background:#c084fc;width:0%"></div></div>
+                    <div class="conf-bar-wrap-cv"><div class="conf-bar-fill-cv" id="cv-cb-hip" style="background:#ffb83f;width:0%"></div></div>
+                </div>
+            </div>
+
+            <div class="cv-controls">
+                <button class="cv-btn-start" id="cv-startBtn" disabled>▶ Start Camera</button>
+                <button class="cv-btn-reset" id="cv-resetBtn">↺ Reset</button>
+                <span class="cv-status-txt" id="cv-statusTxt">Loading models…</span>
+                <span class="cv-conf-chip" id="cv-confChip">
+                    <span class="cv-conf-dot" id="cv-confDot" style="background:#6b5f85"></span>
+                    <span id="cv-confLabel">Pose: —</span>
+                </span>
+            </div>
+
+            <div class="cv-phase-strip">
+                <div class="cv-phase-pill" id="cv-ph-setup">Setup</div>
+                <div class="cv-phase-pill" id="cv-ph-curl">Curl ↑</div>
+                <div class="cv-phase-pill" id="cv-ph-hold">Hold</div>
+                <div class="cv-phase-pill" id="cv-ph-lower">Lower ↓</div>
+            </div>
+
+            <div class="cv-metrics">
+                <div class="cv-m-card reps"><div class="cv-m-label">Total Reps</div><div class="cv-m-value" id="cv-m-reps">0</div></div>
+                <div class="cv-m-card angle"><div class="cv-m-label">Elbow °</div><div class="cv-m-value" id="cv-m-elbow">--</div></div>
+                <div class="cv-m-card score"><div class="cv-m-label">Form %</div><div class="cv-m-value" id="cv-m-score">--</div></div>
+                <div class="cv-m-card phase-c"><div class="cv-m-label">Phase</div><div class="cv-m-value small" id="cv-m-phase">Setup</div></div>
+            </div>
+
+            <div class="cv-alert-strip" id="cv-alerts"></div>
+            <div class="cv-debug-bar" id="cv-debug-bar">Waiting for pose data…</div>
+        </div>
+
+        <div class="cv-right">
+            <div class="cv-ex-panel">
+                <div class="cv-ex-header">
+                    <span class="cv-ex-name" id="cv-ex-name">—</span>
+                    <div class="cv-ex-badges">
+                        <span class="cv-ex-badge" id="cv-ex-diff">—</span>
+                        <span class="cv-ex-badge" style="background:rgba(91,140,255,.12);color:#7ba8ff;border:1px solid rgba(91,140,255,.25)" id="cv-ex-type">—</span>
+                    </div>
+                </div>
+                <div class="cv-ex-body">
+                    <div class="cv-gif-wrap" id="cv-gifWrap">
+                        <div class="cv-gif-placeholder" id="cv-gifLoading">
+                            <div class="spinner" style="width:24px;height:24px;border-width:2px;"></div>
+                            <span>Loading GIF…</span>
+                        </div>
+                        <img class="cv-gif" id="cv-exGif" style="display:none" alt="Exercise animation"/>
+                    </div>
+                    <div class="cv-steps-wrap">
+                        <div class="cv-steps-title">Steps Involved</div>
+                        <div id="cv-stepsList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function(){
+    /* ════════════════════════
+       PART 1 — EXERCISE LIBRARY
+    ════════════════════════ */
+    const XML_RAW_URL = "https://raw.githubusercontent.com/Hunny-Chaurasia/-myHealthyFitness/main/arms.xml";
+    let ALL_EXERCISES = [];
+    let searchTimeout = null;
+
+    function esc(str){
+        if(!str) return '';
+        return String(str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    function getElementText(parent, tagName){
+        if(!parent) return '';
+        const el = parent.getElementsByTagName(tagName)[0];
+        return el ? el.textContent.trim() : '';
+    }
+    function extractMuscles(poseNode){
+        const m = poseNode.getElementsByTagName('Focused_Muscles')[0];
+        if(!m) return 'Arms & shoulders';
+        const p = m.getElementsByTagName('Primary')[0];
+        if(p) return p.textContent.trim();
+        let raw = m.textContent.trim().replace(/\s+/g,' ');
+        return raw.length > 60 ? raw.substring(0,60)+'...' : raw;
+    }
+    function extractSteps(poseNode){
+        const steps = [];
+        const stepNodes = poseNode.getElementsByTagName('step');
+        for(let i=0;i<stepNodes.length;i++){
+            const s = stepNodes[i];
+            steps.push({
+                order: s.getAttribute('order')||(i+1).toString(),
+                focus: s.getAttribute('focus')||'',
+                text: s.textContent.trim().replace(/\s+/g,' ')
+            });
+        }
+        return steps;
+    }
+    function extractMistakes(poseNode){
+        const mistakes = [];
+        const cmNode = poseNode.getElementsByTagName('common_mistakes')[0];
+        if(cmNode){
+            for(const m of cmNode.getElementsByTagName('mistake')){
+                const t = m.textContent.trim();
+                if(t && !mistakes.includes(t)) mistakes.push(t);
+            }
+        }
+        return mistakes.slice(0,6);
+    }
+
+    const LEVEL_ORDER = ['Beginner','Novice','Intermediate','Advanced','Expert'];
+    function normDiff(d){
+        if(!d) return 'Beginner';
+        const s = d.trim().toLowerCase();
+        for(const lvl of LEVEL_ORDER){ if(s===lvl.toLowerCase()) return lvl; }
+        for(const lvl of LEVEL_ORDER){ if(s.includes(lvl.toLowerCase())) return lvl; }
+        return d.trim().charAt(0).toUpperCase()+d.trim().slice(1);
+    }
+
+    function parsePosesFromXML(xmlDoc){
+        const poses = xmlDoc.getElementsByTagName('Pose');
+        if(!poses.length) throw new Error('XML document does not contain any <Pose> elements');
+        const result = [];
+        for(let i=0;i<poses.length;i++){
+            const pose = poses[i];
+            const name = getElementText(pose,'Name')||'Exercise';
+            const difficulty = normDiff(pose.getAttribute('difficulty'));
+            let gifUrl = '';
+            const urlNodes = pose.getElementsByTagName('url');
+            for(let u of urlNodes){
+                const type = u.getAttribute('type');
+                if(type==='gif'||!type){ gifUrl=u.textContent.trim(); break; }
+            }
+            if(!gifUrl && urlNodes.length) gifUrl = urlNodes[0].textContent.trim();
+            const equipment = getElementText(pose,'Equipment')||'No equipment';
+            const muscles = extractMuscles(pose);
+            const poseType = pose.getAttribute('Pose_type')||'Functional';
+            const weightMax = getElementText(pose,'Weight_Max')||'';
+            const ageGrp = getElementText(pose,'Age_Grp')||'';
+            const injuries = getElementText(pose,'Not_For_Injuries')||'';
+            const safety = pose.getAttribute('safety')||'';
+            const steps = extractSteps(pose);
+            const mistakes = extractMistakes(pose);
+            result.push({ id: pose.getAttribute('id')||i, name, difficulty, gif: gifUrl, equipment, muscles, poseType, weightMax, ageGrp, injuries, safety, steps, mistakes });
+        }
+        return result;
+    }
+
+    async function fetchWithFallback(){
+        const proxies = [
+            XML_RAW_URL,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(XML_RAW_URL)}`,
+            `https://corsproxy.io/?${encodeURIComponent(XML_RAW_URL)}`,
+            `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(XML_RAW_URL)}`
+        ];
+        for(const proxy of proxies){
+            try{
+                const res = await fetch(proxy, { cache:'no-store', headers:{ 'Accept':'application/xml,text/xml,*/*' } });
+                if(res.ok){
+                    const txt = await res.text();
+                    if(txt.includes('<Pose')) return txt;
+                }
+            }catch(e){}
+        }
+        throw new Error('Unable to fetch arms.xml — check network or CORS.');
+    }
+
+    function sanitizeXml(xmlStr){
+        return xmlStr.replace(/&(?!(amp|lt|gt|quot|apos|#x?[0-9a-fA-F]+);)/g,'&amp;');
+    }
+
+    /* Search */
+    function getSearchScore(pose, query){
+        const q = query.toLowerCase().trim();
+        const name=pose.name.toLowerCase(), muscles=pose.muscles.toLowerCase(),
+              equipment=pose.equipment.toLowerCase(), poseType=pose.poseType.toLowerCase(),
+              difficulty=pose.difficulty.toLowerCase();
+        if(name===q) return 100; if(name.startsWith(q)) return 90; if(name.includes(q)) return 80;
+        if(muscles.includes(q)) return 70; if(equipment.includes(q)) return 65;
+        if(poseType.includes(q)) return 60; if(difficulty.includes(q)) return 50;
+        const words = q.split(/\s+/).filter(w=>w.length>2);
+        let partialScore = 0;
+        for(const w of words){
+            if(name.includes(w)) partialScore+=15; if(muscles.includes(w)) partialScore+=10;
+            if(equipment.includes(w)) partialScore+=8; if(poseType.includes(w)) partialScore+=7;
+        }
+        return partialScore;
+    }
+
+    function runSearch(query){
+        const q = query.trim();
+        const searchSection = document.getElementById('search_results_section');
+        const noResultsDiv = document.getElementById('no_results_msg');
+        const relatedSection = document.getElementById('related_section');
+        const normalSections = document.getElementById('normal_sections');
+        const statsDiv = document.getElementById('search_stats');
+        if(!q){
+            searchSection.style.display='none'; noResultsDiv.style.display='none';
+            relatedSection.style.display='none'; normalSections.style.display='block';
+            statsDiv.textContent=''; document.getElementById('search_clear').classList.remove('visible'); return;
+        }
+        document.getElementById('search_clear').classList.add('visible');
+        normalSections.style.display='none';
+        const scored = ALL_EXERCISES.map(p=>({pose:p,score:getSearchScore(p,q)}));
+        const directMatches = scored.filter(s=>s.score>=50).sort((a,b)=>b.score-a.score);
+        const related = scored.filter(s=>s.score>0&&s.score<50).sort((a,b)=>b.score-a.score).slice(0,6);
+        const grid = document.getElementById('grid_search_results');
+        const relGrid = document.getElementById('grid_related');
+        grid.innerHTML=''; relGrid.innerHTML='';
+        if(directMatches.length>0){
+            searchSection.style.display='block'; noResultsDiv.style.display='none';
+            directMatches.forEach(s=>{ const card=createExerciseCard(s.pose); card.classList.add('search-match'); grid.appendChild(card); });
+            document.getElementById('result_count_label').textContent=`${directMatches.length} found`;
+            statsDiv.innerHTML=`Showing <span class="hl">${directMatches.length}</span> result${directMatches.length!==1?'s':''} for "<span class="hl">${esc(q)}</span>"`;
+            if(related.length>0){ relatedSection.style.display='block'; related.forEach(s=>relGrid.appendChild(createExerciseCard(s.pose))); }
+            else relatedSection.style.display='none';
+        } else {
+            searchSection.style.display='none'; noResultsDiv.style.display='flex';
+            document.getElementById('no_results_query').textContent=q;
+            statsDiv.innerHTML=`No results for "<span class="hl">${esc(q)}</span>"`;
+            if(related.length>0){ relatedSection.style.display='block'; related.forEach(s=>relGrid.appendChild(createExerciseCard(s.pose))); }
+            else { relatedSection.style.display='none'; statsDiv.innerHTML+=' — try a different keyword'; }
+        }
+    }
+
+    const FALLBACK_IMG = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120"%3E%3Crect width="200" height="120" fill="%23222"/%3E%3Ctext x="50%25" y="50%25" fill="%23555" font-size="10" text-anchor="middle"%3EPreview unavailable%3C/text%3E%3C/svg%3E';
+
+    function createExerciseCard(pose){
+        const card = document.createElement('div');
+        card.className = 'exercise-card';
+        const btn = document.createElement('button');
+        btn.className = 'card-btn';
+        btn.setAttribute('aria-label',`View details for ${pose.name}`);
+        btn.addEventListener('click', e=>{ e.preventDefault(); openModal(pose); });
+        const mediaDiv = document.createElement('div');
+        mediaDiv.className = 'card-media';
+        const img = document.createElement('img');
+        img.className = 'img_style'; img.alt = pose.name; img.loading = 'lazy';
+        img.src = (pose.gif && pose.gif.startsWith('http')) ? pose.gif : FALLBACK_IMG;
+        img.onerror = ()=>{ img.src = FALLBACK_IMG; };
+        const overlay = document.createElement('div'); overlay.className='card-media-overlay'; mediaDiv.appendChild(img); mediaDiv.appendChild(overlay);
+        const diffBadge = document.createElement('div'); diffBadge.className='card-diff-badge';
+        diffBadge.textContent = pose.difficulty+' · '+(pose.poseType||'Strength'); mediaDiv.appendChild(diffBadge);
+        btn.appendChild(mediaDiv);
+        const contentDiv = document.createElement('div'); contentDiv.className='card-content';
+        const nameEl = document.createElement('div'); nameEl.className='form_name'; nameEl.textContent=pose.name;
+        const equipP = document.createElement('div'); equipP.className='text_left';
+        equipP.innerHTML=`🛠️ <strong style="color:#555;font-weight:400;">Equipment:</strong> <span class="equipement">${esc(pose.equipment.substring(0,40))}</span>`;
+        const musclesP = document.createElement('div'); musclesP.className='text_left';
+        musclesP.innerHTML=`🎯 <strong style="color:#555;font-weight:400;">Focus:</strong> <span class="Focused_Muscles">${esc(pose.muscles.substring(0,55))}</span>`;
+        const clickHint = document.createElement('div'); clickHint.className='Click_image';
+        clickHint.innerHTML='👆 Tap card for full guide & steps';
+        contentDiv.appendChild(nameEl); contentDiv.appendChild(equipP); contentDiv.appendChild(musclesP); contentDiv.appendChild(clickHint);
+        btn.appendChild(contentDiv); card.appendChild(btn);
+        return card;
+    }
+
+    /* Modal */
+    function openModal(pose){
+        const modalBody = document.getElementById('modal_body');
+        modalBody.innerHTML='';
+        if(pose.gif && pose.gif.startsWith('http')){
+            const mi = document.createElement('img');
+            mi.src=pose.gif; mi.className='modal-img'; mi.alt=pose.name;
+            mi.onerror=()=>{ mi.src=FALLBACK_IMG; };
+            modalBody.appendChild(mi);
+        }
+        const title = document.createElement('div'); title.className='modal-title'; title.textContent=pose.name;
+        modalBody.appendChild(title);
+        const metaRow = document.createElement('div'); metaRow.className='modal-meta-row';
+        [pose.difficulty, pose.poseType, pose.ageGrp].filter(Boolean).forEach(t=>{
+            const chip = document.createElement('span'); chip.className='modal-chip'; chip.textContent=t; metaRow.appendChild(chip);
+        });
+        modalBody.appendChild(metaRow);
+        const infoGrid = document.createElement('div'); infoGrid.className='modal-info-grid';
+        [
+            {label:'📦 Equipment', val:pose.equipment},
+            {label:'💪 Muscles', val:pose.muscles},
+            {label:'⚖️ Weight Range', val:pose.weightMax||'Bodyweight'},
+            {label:'🚫 Avoid If', val:pose.injuries}
+        ].forEach(item=>{
+            if(!item.val) return;
+            const cell = document.createElement('div'); cell.className='info-cell';
+            cell.innerHTML=`<div class="info-label">${item.label}</div><div class="info-val">${esc(item.val)}</div>`;
+            infoGrid.appendChild(cell);
+        });
+        modalBody.appendChild(infoGrid);
+        if(pose.safety){
+            const safeDiv = document.createElement('div');
+            safeDiv.style.cssText='background:#120e1a;border:1px solid rgba(168,85,247,0.15);border-radius:12px;padding:0.8rem 1rem;font-size:0.78rem;color:#c4a8d4;line-height:1.55;margin-bottom:0.5rem;';
+            safeDiv.innerHTML=`<span style="color:#a855f7;font-weight:700;letter-spacing:0.5px;">⚠ SAFETY NOTE</span><br>${esc(pose.safety)}`;
+            modalBody.appendChild(safeDiv);
+        }
+        if(pose.steps && pose.steps.length){
+            const stepsTitle = document.createElement('div'); stepsTitle.className='steps-title'; stepsTitle.textContent='📋 EXECUTION STEPS';
+            modalBody.appendChild(stepsTitle);
+            pose.steps.forEach((step,idx)=>{
+                const stepDiv = document.createElement('div'); stepDiv.className='step-item';
+                const numEl = document.createElement('div'); numEl.className='step-num'; numEl.textContent=step.order||idx+1;
+                const contentEl = document.createElement('div'); contentEl.className='step-content';
+                if(step.focus){ const focusEl = document.createElement('div'); focusEl.className='step-focus'; focusEl.textContent=step.focus; contentEl.appendChild(focusEl); }
+                const textEl = document.createElement('div'); textEl.className='step-text'; textEl.textContent=step.text;
+                contentEl.appendChild(textEl); stepDiv.appendChild(numEl); stepDiv.appendChild(contentEl); modalBody.appendChild(stepDiv);
+            });
+        }
+        if(pose.mistakes && pose.mistakes.length){
+            const warnTitle = document.createElement('div'); warnTitle.className='mistakes-title'; warnTitle.textContent='⚠️ COMMON MISTAKES';
+            modalBody.appendChild(warnTitle);
+            pose.mistakes.forEach(m=>{
+                const item = document.createElement('div'); item.className='mistake-item';
+                const icon = document.createElement('div'); icon.className='mistake-icon'; icon.textContent='!';
+                const txt = document.createElement('span'); txt.textContent=m;
+                item.appendChild(icon); item.appendChild(txt); modalBody.appendChild(item);
+            });
+        }
+
+        /* Analyze Posture Button */
+        const analyzeWrap = document.createElement('div');
+        analyzeWrap.className='analyze-btn-wrap';
+        const analyzeBtn = document.createElement('button');
+        analyzeBtn.className='btn-analyze-posture';
+        analyzeBtn.innerHTML='<span class="btn-analyze-icon">🎯</span> Analyze My Posture with AI Camera';
+        analyzeBtn.addEventListener('click',()=>{
+            window.closeModalFunc();
+            window.openCVAnalyzer(pose);
+        });
+        analyzeWrap.appendChild(analyzeBtn);
+        modalBody.appendChild(analyzeWrap);
+
+        document.getElementById('steps_modal').style.display='flex';
+        document.body.style.overflow='hidden';
+        document.querySelector('.modal_inner').scrollTop=0;
+    }
+
+    window.closeModalFunc = function(){
+        document.getElementById('steps_modal').style.display='none';
+        document.body.style.overflow='';
+    };
+    document.getElementById('steps_modal').addEventListener('click', function(e){ if(e.target===this) window.closeModalFunc(); });
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape') window.closeModalFunc(); });
+
+    function populateSections(posesArray){
+        const LEVELS = ['Beginner','Novice','Intermediate','Advanced','Expert'];
+        const grids = {};
+        const heads = {};
+        const counts = {};
+        LEVELS.forEach(k=>{
+            grids[k] = document.getElementById('grid_'+k);
+            heads[k] = document.getElementById('head_'+k);
+            counts[k] = 0;
+            if(grids[k]) grids[k].innerHTML='';
+        });
+        posesArray.forEach(pose=>{
+            const key = LEVELS.includes(pose.difficulty) ? pose.difficulty : 'Beginner';
+            if(grids[key]){ grids[key].appendChild(createExerciseCard(pose)); counts[key]++; }
+        });
+        LEVELS.forEach(k=>{ if(heads[k]) heads[k].style.display = counts[k]>0 ? 'flex' : 'none'; });
+    }
+
+    async function initApp(){
+        const loadingDiv = document.getElementById('loading_msg');
+        const errorDiv = document.getElementById('error_msg');
+        try {
+            loadingDiv.style.display='flex'; errorDiv.style.display='none';
+            const xmlString = await fetchWithFallback();
+            const cleanXml = sanitizeXml(xmlString);
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(cleanXml,'text/xml');
+            const parseError = xmlDoc.querySelector('parsererror');
+            if(parseError) throw new Error(`XML parse error: ${parseError.textContent.substring(0,150)}`);
+            const exercises = parsePosesFromXML(xmlDoc);
+            if(!exercises.length) throw new Error('No exercises found in XML');
+            ALL_EXERCISES = exercises;
+            populateSections(exercises);
+            loadingDiv.style.display='none';
+            const sw = document.getElementById('search_wrapper');
+            sw.style.display='block';
+            const searchInput = document.getElementById('search_input');
+            const searchClear = document.getElementById('search_clear');
+            searchInput.addEventListener('input', function(){
+                clearTimeout(searchTimeout);
+                const val = this.value;
+                searchTimeout = setTimeout(()=>runSearch(val), 220);
+            });
+            searchInput.addEventListener('keydown', function(e){ if(e.key==='Escape'){ this.value=''; runSearch(''); } });
+            searchClear.addEventListener('click', function(){ searchInput.value=''; runSearch(''); searchInput.focus(); });
+        } catch(err){
+            console.error('ArmLab error:', err);
+            loadingDiv.style.display='none'; errorDiv.style.display='block';
+            errorDiv.innerHTML=`<div style="font-size:1.2rem;margin-bottom:10px;">⚠️ LOAD FAILED</div><div style="background:#1f1b1b;padding:1rem;border-radius:16px;font-size:0.85rem;">${esc(err.message)}</div><div style="margin-top:1rem;font-size:0.8rem;color:#888;">Make sure arms.xml exists at<br><code style="background:#000;padding:4px;border-radius:4px;">${XML_RAW_URL}</code><br>Repository must be public.</div><button class="retry-btn" id="manualRetryBtn">⟳ RETRY NOW</button>`;
+            document.getElementById('manualRetryBtn').addEventListener('click',()=>initApp());
+        }
+    }
+    initApp();
+
+
+    /* ════════════════════════
+       PART 2 — CV POSTURE ANALYZER
+    ════════════════════════ */
+    const TFJS_URL = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js';
+    const POSE_URL = 'https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js';
+
+    const SMOOTH_ALPHA = 0.45;
+    const CONF_GATE = 0.30;
+    const ANGLE_HIST = 7;
+    const PHASE_HOLD_FRAMES = 3;
+
+    let cvSmoothKP={}, cvAngleHistory=[], cvPhaseVoteBuffer=[];
+    let cvDetector=null, cvRunning=false, cvAnimId=null;
+    let cvRepCount=0, cvPhase='setup', cvHoldTimer=0;
+    let cvFormScores=[], cvAlertMap={}, cvPrevElbowAngle=null;
+    let cvFramesSinceGoodPose=0;
+    let cvTFLoaded=false;
+
+    const cvVideo = document.getElementById('cv-video');
+    const cvCanvas = document.getElementById('cv-overlay-canvas');
+    const cvCtx = cvCanvas.getContext('2d');
+
+    function cvAngle3(A,B,C){
+        const bax=A.x-B.x,bay=A.y-B.y,bcx=C.x-B.x,bcy=C.y-B.y;
+        const dot=bax*bcx+bay*bcy, mag=Math.sqrt(bax*bax+bay*bay)*Math.sqrt(bcx*bcx+bcy*bcy);
+        if(!mag) return 0;
+        return Math.acos(Math.max(-1,Math.min(1,dot/mag)))*180/Math.PI;
+    }
+    function cvAngleFromVertical(p1,p2){
+        const dx=p2.x-p1.x,dy=p2.y-p1.y;
+        return Math.abs(Math.atan2(Math.abs(dx),Math.abs(dy))*180/Math.PI);
+    }
+    function cvMedian(arr){ const s=[...arr].sort((a,b)=>a-b),m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
+    function cvSmoothPoint(id,raw,conf){
+        if(!cvSmoothKP[id]||conf<CONF_GATE){ cvSmoothKP[id]={...raw,conf}; return cvSmoothKP[id]; }
+        cvSmoothKP[id].x=SMOOTH_ALPHA*raw.x+(1-SMOOTH_ALPHA)*cvSmoothKP[id].x;
+        cvSmoothKP[id].y=SMOOTH_ALPHA*raw.y+(1-SMOOTH_ALPHA)*cvSmoothKP[id].y;
+        cvSmoothKP[id].conf=SMOOTH_ALPHA*conf+(1-SMOOTH_ALPHA)*cvSmoothKP[id].conf;
+        return cvSmoothKP[id];
+    }
+    function cvConfColor(c){ if(c>=0.70) return '#a855f7'; if(c>=0.45) return '#ffb83f'; return '#ff5757'; }
+    function cvAddAlert(id,msg,type){ cvAlertMap[id]={msg,type,time:Date.now()}; cvRenderAlerts(); }
+    function cvClearAlert(id){ if(cvAlertMap[id]){ delete cvAlertMap[id]; cvRenderAlerts(); } }
+    function cvRenderAlerts(){
+        const now=Date.now();
+        Object.keys(cvAlertMap).forEach(k=>{ if(now-cvAlertMap[k].time>5000) delete cvAlertMap[k]; });
+        document.getElementById('cv-alerts').innerHTML=Object.values(cvAlertMap)
+            .map(v=>`<div class="cv-alert ${v.type}"><span class="cv-alert-dot"></span>${v.msg}</div>`).join('');
+    }
+
+    function cvVotePhase(candidate){
+        cvPhaseVoteBuffer.push(candidate);
+        if(cvPhaseVoteBuffer.length>PHASE_HOLD_FRAMES) cvPhaseVoteBuffer.shift();
+        if(cvPhaseVoteBuffer.length===PHASE_HOLD_FRAMES && cvPhaseVoteBuffer.every(v=>v===candidate)) cvCommitPhase(candidate);
+    }
+    function cvCommitPhase(p){
+        if(cvPhase===p) return;
+        if(cvPhase==='lower'&&p==='setup'){
+            cvRepCount++;
+            document.getElementById('cv-m-reps').textContent=cvRepCount;
+            const avg=cvFormScores.length?Math.round(cvFormScores.reduce((a,b)=>a+b)/cvFormScores.length):100;
+            cvAddAlert('rep','Rep '+cvRepCount+' complete — form score '+avg+'%','good');
+        }
+        cvPhase=p;
+        cvHighlightStep(p);
+        ['setup','curl','hold','lower'].forEach(n=>{
+            document.getElementById('cv-ph-'+n).classList.remove('active','warn-active');
+        });
+        const map={setup:'active',curl:'active',hold:'warn-active',lower:'active'};
+        document.getElementById('cv-ph-'+p).classList.add(map[p]||'active');
+        document.getElementById('cv-m-phase').textContent={setup:'Setup',curl:'Curling',hold:'Holding',lower:'Lowering'}[p]||p;
+    }
+    const CV_PHASE_STEP={setup:0,curl:1,hold:2,lower:3};
+    function cvHighlightStep(p){
+        const idx=CV_PHASE_STEP[p]??-1;
+        document.querySelectorAll('.cv-step-row').forEach((el,i)=>el.classList.toggle('cv-active',i===idx));
+    }
+
+    function cvUpdateConfBars(sh,el,wr,hip){
+        const set=(id,v)=>{ const e=document.getElementById(id); if(e){ e.style.width=Math.round(v*100)+'%'; e.style.background=cvConfColor(v); } };
+        set('cv-cb-shoulder',sh?.conf||0); set('cv-cb-elbow',el?.conf||0);
+        set('cv-cb-wrist',wr?.conf||0); set('cv-cb-hip',hip?.conf||0);
+    }
+
+    function cvDrawSkeleton(kp){
+        const PAIRS=[[5,6],[5,11],[6,12],[11,12],[5,7],[7,9],[6,8],[8,10],[7,8]];
+        PAIRS.forEach(([a,b])=>{
+            const pa=kp[a],pb=kp[b];
+            if(pa&&pb&&pa.conf>CONF_GATE&&pb.conf>CONF_GATE){
+                const grad=cvCtx.createLinearGradient(pa.x,pa.y,pb.x,pb.y);
+                grad.addColorStop(0,cvConfColor(pa.conf)+'99'); grad.addColorStop(1,cvConfColor(pb.conf)+'99');
+                cvCtx.beginPath(); cvCtx.moveTo(pa.x,pa.y); cvCtx.lineTo(pb.x,pb.y);
+                cvCtx.lineWidth=3; cvCtx.strokeStyle=grad; cvCtx.lineCap='round'; cvCtx.stroke();
+            }
+        });
+        Object.entries(kp).forEach(([,p])=>{
+            if(p&&p.conf>CONF_GATE){
+                const r=4+p.conf*4;
+                cvCtx.beginPath(); cvCtx.arc(p.x,p.y,r+3,0,2*Math.PI); cvCtx.fillStyle=cvConfColor(p.conf)+'22'; cvCtx.fill();
+                cvCtx.beginPath(); cvCtx.arc(p.x,p.y,r,0,2*Math.PI); cvCtx.fillStyle=cvConfColor(p.conf); cvCtx.fill();
+            }
+        });
+    }
+    function cvDrawLabel(p,text,color){
+        cvCtx.font='bold 12px DM Sans,sans-serif';
+        cvCtx.strokeStyle='rgba(5,3,10,.85)'; cvCtx.lineWidth=3; cvCtx.lineJoin='round';
+        cvCtx.strokeText(text,p.x+10,p.y-8);
+        cvCtx.fillStyle=color||'#fff'; cvCtx.fillText(text,p.x+10,p.y-8);
+    }
+
+    function cvAnalyze(rawKP){
+        const kp={};
+        Object.entries(rawKP).forEach(([id,p])=>{ kp[id]=cvSmoothPoint(id,p,p.score); });
+        const rC=(kp[6]?.conf||0)*1.0+(kp[8]?.conf||0)*1.2+(kp[10]?.conf||0)*0.8;
+        const lC=(kp[5]?.conf||0)*1.0+(kp[7]?.conf||0)*1.2+(kp[9]?.conf||0)*0.8;
+        const S=rC>=lC?{sh:6,el:8,wr:10,hip:12}:{sh:5,el:7,wr:9,hip:11};
+        const sh=kp[S.sh],el=kp[S.el],wr=kp[S.wr],hip=kp[S.hip];
+        if(!sh||!el||!wr) return;
+        const minConf=Math.min(sh.conf||0,el.conf||0,wr.conf||0);
+        const poseConf=Math.round(minConf*100);
+        cvUpdateConfBars(sh,el,wr,hip);
+        const dot=document.getElementById('cv-confDot');
+        const lbl=document.getElementById('cv-confLabel');
+        const chip=document.getElementById('cv-confChip');
+        dot.style.background=cvConfColor(minConf);
+        lbl.textContent='Pose: '+poseConf+'%';
+        chip.style.borderColor=cvConfColor(minConf)+'55';
+        if(minConf<CONF_GATE){
+            cvFramesSinceGoodPose++;
+            if(cvFramesSinceGoodPose>15) cvAddAlert('vis','👤 Step into frame or improve lighting','warn');
+            return;
+        }
+        cvFramesSinceGoodPose=0; cvClearAlert('vis');
+        cvDrawSkeleton(kp);
+        const rawAngle=cvAngle3(sh,el,wr);
+        cvAngleHistory.push(rawAngle);
+        if(cvAngleHistory.length>ANGLE_HIST) cvAngleHistory.shift();
+        const elbowAngle=Math.round(cvMedian(cvAngleHistory));
+        const upperArmAngle=cvAngleFromVertical(sh,el);
+        const torsoAngle=(hip&&hip.conf>0.25)?cvAngleFromVertical(sh,hip):0;
+        document.getElementById('cv-m-elbow').textContent=elbowAngle+'°';
+        document.getElementById('cv-debug-bar').textContent=
+            `elbow: ${elbowAngle}° (raw ${Math.round(rawAngle)}°)  |  upper-arm: ${Math.round(upperArmAngle)}°  |  torso: ${Math.round(torsoAngle)}°  |  phase: ${cvPhase}  |  conf: ${poseConf}%  |  side: ${rC>=lC?'R':'L'}`;
+        cvDrawLabel(el,elbowAngle+'°',cvConfColor(el.conf));
+        if(upperArmAngle>8) cvDrawLabel(sh,'+'+Math.round(upperArmAngle)+'° drift','#ffb83f');
+        let score=100;
+        if(upperArmAngle>12){ cvAddAlert('ua','⚠ Upper arm drifting ('+Math.round(upperArmAngle)+'°) — pin elbows to sides','warn'); score-=20; }
+        else cvClearAlert('ua');
+        if(torsoAngle>16){ cvAddAlert('to','✗ Torso swaying ('+Math.round(torsoAngle)+'°) — keep back straight','err'); score-=30; }
+        else cvClearAlert('to');
+        if(cvPhase==='lower'&&cvPrevElbowAngle!==null){
+            const delta=Math.abs(elbowAngle-cvPrevElbowAngle);
+            if(delta>22){ cvAddAlert('speed','✗ Lowering too fast — control the descent 2–3s','err'); score-=15; }
+        }
+        cvFormScores.push(Math.max(0,score));
+        if(cvFormScores.length>90) cvFormScores.shift();
+        const avg=Math.round(cvFormScores.reduce((a,b)=>a+b)/cvFormScores.length);
+        const se=document.getElementById('cv-m-score');
+        se.textContent=avg+'%'; se.style.color=avg>=80?'#a855f7':avg>=60?'#ffb83f':'#ff5757';
+        if(cvPhase==='setup'){
+            if(elbowAngle<150&&elbowAngle>40) cvVotePhase('curl'); else cvVotePhase('setup');
+        } else if(cvPhase==='curl'){
+            if(elbowAngle<=45){ cvVotePhase('hold'); cvHoldTimer=Date.now(); cvAddAlert('hold','◉ Top — squeeze & hold 1s!','good'); }
+            else if(elbowAngle>=172) cvVotePhase('setup');
+            else cvVotePhase('curl');
+        } else if(cvPhase==='hold'){
+            if(Date.now()-cvHoldTimer>=900){ cvCommitPhase('lower'); cvAddAlert('lower','↓ Good! Lower slowly 2–3s','good'); }
+        } else if(cvPhase==='lower'){
+            if(elbowAngle>=165) cvVotePhase('setup'); else cvVotePhase('lower');
+        }
+        cvPrevElbowAngle=elbowAngle;
+    }
+
+    async function cvLoop(){
+        if(!cvRunning) return;
+        if(cvVideo.readyState>=2&&cvVideo.videoWidth>0){
+            cvCanvas.width=cvVideo.videoWidth; cvCanvas.height=cvVideo.videoHeight;
+            cvCtx.clearRect(0,0,cvCanvas.width,cvCanvas.height);
+            try{
+                const poses=await cvDetector.estimatePoses(cvVideo,{flipHorizontal:true,maxPoses:1});
+                if(poses.length>0){
+                    const rawKP={};
+                    poses[0].keypoints.forEach((p,i)=>{ rawKP[i]={x:p.x,y:p.y,score:p.score||0}; });
+                    cvAnalyze(rawKP);
+                }
+            }catch(e){ console.warn(e); }
+        }
+        cvAnimId=requestAnimationFrame(cvLoop);
+    }
+
+    async function cvStartCamera(){
+        const btn=document.getElementById('cv-startBtn');
+        const statusEl=document.getElementById('cv-statusTxt');
+        if(cvRunning){
+            cvRunning=false;
+            if(cvAnimId) cancelAnimationFrame(cvAnimId);
+            cvVideo.srcObject?.getTracks().forEach(t=>t.stop());
+            cvVideo.srcObject=null;
+            btn.textContent='▶ Start Camera'; statusEl.textContent='Camera off';
+            document.getElementById('cv-model-status').textContent='Stopped';
+            document.getElementById('cv-model-status').classList.remove('ready');
+            document.getElementById('cv-placeholder').style.display='flex';
+            document.getElementById('cv-confOverlay').style.display='none';
+            return;
+        }
+        btn.textContent='Starting…'; btn.disabled=true; statusEl.textContent='Requesting camera…';
+        try{
+            const stream=await navigator.mediaDevices.getUserMedia({
+                video:{ width:{ideal:1280,min:640}, height:{ideal:720,min:480}, frameRate:{ideal:30,min:15}, facingMode:'user' }
+            });
+            cvVideo.srcObject=stream;
+            document.getElementById('cv-placeholder').style.display='none';
+            await new Promise((res,rej)=>{ cvVideo.onloadedmetadata=()=>cvVideo.play().then(res).catch(rej); cvVideo.onerror=rej; });
+            statusEl.textContent='Loading MoveNet Thunder…';
+            if(!cvDetector){
+                cvDetector=await poseDetection.createDetector(
+                    poseDetection.SupportedModels.MoveNet,{
+                        modelType:poseDetection.movenet.modelType.SINGLEPOSE_THUNDER,
+                        enableSmoothing:true, minPoseScore:0.25
+                    }
+                );
+            }
+            const ms=document.getElementById('cv-model-status');
+            ms.textContent='Thunder Active ⚡'; ms.classList.add('ready');
+            cvRunning=true; btn.textContent='⏹ Stop Camera'; btn.disabled=false;
+            statusEl.textContent='Tracking active';
+            document.getElementById('cv-confOverlay').style.display='flex';
+            cvCommitPhase('setup'); cvLoop();
+        }catch(e){
+            statusEl.textContent='Error: '+e.message;
+            btn.textContent='▶ Start Camera'; btn.disabled=false;
+        }
+    }
+
+    function cvResetAll(){
+        cvRepCount=0; cvFormScores=[];
+        Object.keys(cvAlertMap).forEach(k=>delete cvAlertMap[k]);
+        cvPrevElbowAngle=null; cvPhase='setup';
+        cvAngleHistory=[]; cvPhaseVoteBuffer=[]; cvSmoothKP={}; cvFramesSinceGoodPose=0;
+        document.getElementById('cv-m-reps').textContent='0';
+        ['cv-m-elbow','cv-m-score'].forEach(id=>document.getElementById(id).textContent='--');
+        document.getElementById('cv-m-phase').textContent='Setup';
+        document.getElementById('cv-alerts').innerHTML='';
+        document.getElementById('cv-debug-bar').textContent='Reset — ready';
+        ['setup','curl','hold','lower'].forEach(n=>
+            document.getElementById('cv-ph-'+n).classList.remove('active','warn-active'));
+        cvHighlightStep('setup');
+    }
+
+    window.openCVAnalyzer = function(pose){
+        const overlay=document.getElementById('cv-overlay');
+        overlay.style.display='block';
+        document.body.style.overflow='hidden';
+
+        document.getElementById('cv-topbar-title').innerHTML=`<span>${esc(pose.name)}</span> — Posture Analyzer`;
+        document.getElementById('cv-ex-name').textContent=pose.name;
+        document.getElementById('cv-ex-diff').textContent=pose.difficulty;
+        document.getElementById('cv-ex-type').textContent=pose.poseType;
+
+        const gif=document.getElementById('cv-exGif');
+        const ld=document.getElementById('cv-gifLoading');
+        gif.style.display='none'; ld.style.display='flex';
+        if(pose.gif && pose.gif.startsWith('http')){
+            gif.onload=()=>{ ld.style.display='none'; gif.style.display='block'; };
+            gif.onerror=()=>{ ld.innerHTML='<span style="font-size:1.5rem;opacity:.3">💪</span><span>No GIF</span>'; };
+            gif.src=pose.gif;
+        } else { ld.innerHTML='<span style="font-size:1.5rem;opacity:.3">💪</span><span>No GIF</span>'; }
+
+        document.getElementById('cv-stepsList').innerHTML=(pose.steps||[]).map((s,i)=>`
+            <div class="cv-step-row" data-step="${i}">
+                <div class="cv-step-num">${s.order||i+1}</div>
+                <div>
+                    <div class="cv-step-focus">${esc(s.focus||'')}</div>
+                    <div class="cv-step-text">${esc(s.text)}</div>
+                </div>
+            </div>`).join('');
+
+        cvResetAll();
+
+        if(!cvTFLoaded){
+            document.getElementById('cv-model-status').textContent='Loading TF.js…';
+            document.getElementById('cv-startBtn').disabled=true;
+            document.getElementById('cv-statusTxt').textContent='Loading AI models…';
+            loadScript(TFJS_URL).then(()=>tf.ready()).then(()=>loadScript(POSE_URL)).then(()=>{
+                cvTFLoaded=true;
+                document.getElementById('cv-model-status').textContent='Ready';
+                document.getElementById('cv-model-status').classList.add('ready');
+                document.getElementById('cv-startBtn').disabled=false;
+                document.getElementById('cv-statusTxt').textContent='Click Start Camera to begin';
+            }).catch(()=>{
+                document.getElementById('cv-model-status').textContent='Load failed';
+                document.getElementById('cv-statusTxt').textContent='Check network';
+            });
+        } else {
+            document.getElementById('cv-model-status').textContent='Ready';
+            document.getElementById('cv-model-status').classList.add('ready');
+            document.getElementById('cv-startBtn').disabled=false;
+            document.getElementById('cv-statusTxt').textContent='Click Start Camera to begin';
+        }
+    };
+
+    window.closeCVAnalyzer = function(){
+        if(cvRunning){
+            cvRunning=false;
+            if(cvAnimId) cancelAnimationFrame(cvAnimId);
+            cvVideo.srcObject?.getTracks().forEach(t=>t.stop());
+            cvVideo.srcObject=null;
+        }
+        document.getElementById('cv-overlay').style.display='none';
+        document.body.style.overflow='';
+    };
+
+    document.getElementById('cv-startBtn').addEventListener('click',cvStartCamera);
+    document.getElementById('cv-resetBtn').addEventListener('click',cvResetAll);
+
+    function loadScript(src){
+        return new Promise((res,rej)=>{
+            if(document.querySelector(`script[src="${src}"]`)){ res(); return; }
+            const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej;
+            document.head.appendChild(s);
+        });
+    }
+
+})();
+</script>
+</body>
+</html>

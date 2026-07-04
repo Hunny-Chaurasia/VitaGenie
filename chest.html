@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Motion Mentor | Chest Exercise Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #ff6b35;
+            --accent-dark: #e05520;
+            --bg: #080808;
+            --card-bg: #101010;
+            --border: #1e1e1e;
+            --border-hover: #ff6b35;
+            --text: #e8e8e8;
+            --muted: #888;
+            --dim: #444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', system-ui, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-header {
+            position: relative;
+            padding: 3rem 2.5rem 2rem;
+            background: linear-gradient(160deg, #1a0a10 0%, #080808 60%);
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .app-header::before {
+            content: 'CHEST';
+            position: absolute;
+            right: -1rem;
+            top: -1.5rem;
+            font-family: 'Syne', sans-serif;
+            font-size: 9rem;
+            font-weight: 800;
+            color: rgba(255,107,53,0.04);
+            letter-spacing: -4px;
+            pointer-events: none;
+            user-select: none;
+        }
+        .header-eyebrow {
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+        }
+        .app-header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.05;
+            color: #fff;
+        }
+        .app-header h1 span { color: var(--accent); }
+        .header-sub {
+            margin-top: 0.8rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+            max-width: 460px;
+        }
+        .live-dot {
+            display: inline-block;
+            width: 7px; height: 7px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s ease infinite;
+        }
+        @keyframes pulse {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        /* ── SEARCH BAR ─────────────────────────────── */
+        .search-wrapper {
+            padding: 1.6rem 2.5rem 0.6rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        .search-inner {
+            position: relative;
+            max-width: 680px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            pointer-events: none;
+            color: var(--muted);
+        }
+        #search_input {
+            width: 100%;
+            background: #111;
+            border: 1px solid #2a2a2a;
+            border-radius: 50px;
+            padding: 0.72rem 3rem 0.72rem 2.7rem;
+            font-size: 0.9rem;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        #search_input::placeholder { color: var(--dim); }
+        #search_input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.12);
+        }
+        #search_clear {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 50%;
+            width: 24px; height: 24px;
+            color: var(--muted);
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, color 0.15s;
+        }
+        #search_clear:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+        #search_meta {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 0.5rem;
+            padding-left: 4px;
+            min-height: 18px;
+        }
+        #search_meta .highlight { color: var(--accent); font-weight: 500; }
+
+        /* ── SECTION HEADING ─────────────────────── */
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 2.5rem 2.5rem 0.8rem;
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        .section-head .pill {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: #151515;
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 0.35rem 0.9rem;
+            font-size: 0.75rem;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 400;
+            color: var(--muted);
+        }
+        .section-head .pill .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* ── GRID ────────────────────────────────── */
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 1.4rem;
+            padding: 1rem 2.5rem 2rem;
+        }
+
+        /* ── CARD ────────────────────────────────── */
+        .exercise-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .exercise-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 24px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,107,53,0.08);
+        }
+        .exercise-card.search-match {
+            border-color: rgba(255,107,53,0.4);
+        }
+        .card-media {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #151515;
+            overflow: hidden;
+        }
+        .card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        .exercise-card:hover .card-media img { transform: scale(1.04); }
+        .card-media-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(8,8,8,0.7) 0%, transparent 55%);
+            pointer-events: none;
+        }
+        .card-diff-badge {
+            position: absolute;
+            top: 10px; left: 10px;
+            background: rgba(8,8,8,0.82);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 3px 10px;
+            font-size: 0.65rem;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+        }
+        .card-body {
+            padding: 1rem 1.1rem 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .card-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.25;
+        }
+        .card-name mark {
+            background: rgba(255,107,53,0.22);
+            color: #ffaa88;
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem 0.6rem;
+        }
+        .meta-chip {
+            font-size: 0.68rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .meta-chip strong { color: var(--accent); font-weight: 500; }
+        .card-tap-hint {
+            margin-top: auto;
+            padding-top: 0.6rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.65rem;
+            color: var(--dim);
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
+        /* ── SEARCH RESULTS SECTION ─────────────── */
+        #search_results_section { display: none; }
+        .search-results-head {
+            padding: 2rem 2.5rem 0.5rem;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--accent);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* ── NO RESULTS ─────────────────────────── */
+        #no_results {
+            display: none;
+            margin: 2rem 2.5rem;
+            background: #110a08;
+            border: 1px solid rgba(255,107,53,0.16);
+            border-left: 3px solid var(--accent);
+            border-radius: 16px;
+            padding: 1.8rem 2rem;
+        }
+        .no-results-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.4rem;
+        }
+        .no-results-sub {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-bottom: 1.2rem;
+        }
+        .related-label {
+            font-size: 0.68rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+        }
+        .suggestion-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .suggestion-chip {
+            background: #161616;
+            border: 1px solid #2a2a2a;
+            border-radius: 30px;
+            padding: 0.3rem 0.85rem;
+            font-size: 0.76rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .suggestion-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ── LOADING / ERROR ─────────────────────── */
+        #loading_msg {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 40vh;
+            gap: 1.2rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+        .spinner {
+            width: 44px; height: 44px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #error_msg {
+            max-width: 640px;
+            margin: 3rem auto;
+            background: #120e0e;
+            border: 1px solid #3a1c1c;
+            border-left: 4px solid #ff5050;
+            border-radius: 18px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .retry-btn {
+            margin-top: 1.2rem;
+            background: var(--accent);
+            border: none;
+            color: #080808;
+            font-weight: 700;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            padding: 0.6rem 1.5rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .retry-btn:hover { background: #daff66; }
+
+        /* ── MODAL ───────────────────────────────── */
+        #steps_modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal_inner {
+            max-width: 680px;
+            width: 100%;
+            max-height: 92vh;
+            overflow-y: auto;
+            background: #0e0e0e;
+            border: 1px solid #252525;
+            border-radius: 24px;
+            padding: 1.8rem 2rem 2.2rem;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.7);
+            scrollbar-width: thin;
+            scrollbar-color: #2a2a2a transparent;
+        }
+        .modal_inner::-webkit-scrollbar { width: 4px; }
+        .modal_inner::-webkit-scrollbar-track { background: transparent; }
+        .modal_inner::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
+        #close_modal_btn {
+            position: sticky;
+            top: 0;
+            float: right;
+            background: #1a1a1a;
+            border: 1px solid #2e2e2e;
+            color: #aaa;
+            padding: 5px 16px;
+            border-radius: 30px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            z-index: 2;
+        }
+        #close_modal_btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+        .modal-img {
+            width: 100%;
+            border-radius: 16px;
+            display: block;
+            margin: 0.5rem 0 1.2rem;
+            background: #181818;
+        }
+        .modal-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1.2;
+            margin-bottom: 0.3rem;
+        }
+        .modal-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+        }
+        .modal-chip {
+            background: #181818;
+            border: 1px solid #262626;
+            border-radius: 30px;
+            padding: 3px 12px;
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+        .modal-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+        .info-cell {
+            background: #141414;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.7rem 0.9rem;
+        }
+        .info-cell .info-label {
+            font-size: 0.62rem;
+            color: var(--dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+        .info-cell .info-val {
+            font-size: 0.82rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+        .steps-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.8px;
+            margin: 1.4rem 0 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .steps-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .step-item {
+            display: flex;
+            gap: 0.9rem;
+            margin-bottom: 0.9rem;
+            align-items: flex-start;
+        }
+        .step-num {
+            flex-shrink: 0;
+            width: 26px; height: 26px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'Syne', sans-serif;
+        }
+        .step-content .step-focus {
+            font-size: 0.68rem;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+        .step-content .step-text {
+            font-size: 0.84rem;
+            color: #c4c4c4;
+            line-height: 1.55;
+        }
+        .mistakes-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #ff9d3b;
+            letter-spacing: 0.8px;
+            margin: 1.4rem 0 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mistakes-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .mistake-item {
+            display: flex;
+            gap: 0.7rem;
+            align-items: flex-start;
+            margin-bottom: 0.6rem;
+            font-size: 0.83rem;
+            color: #bbb;
+        }
+        .mistake-item::before {
+            content: '!';
+            flex-shrink: 0;
+            width: 18px; height: 18px;
+            background: rgba(255,157,59,0.12);
+            border: 1px solid rgba(255,157,59,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: #ff9d3b;
+            margin-top: 1px;
+        }
+
+        @media (max-width: 640px) {
+            .exercise-grid { padding: 0.8rem 1rem 1.5rem; gap: 1rem; }
+            .section-head { padding: 1.8rem 1rem 0.6rem; }
+            .app-header { padding: 2rem 1.2rem 1.5rem; }
+            .modal_inner { padding: 1.2rem; }
+            .modal-info-grid { grid-template-columns: 1fr; }
+            .search-wrapper { padding: 1rem 1rem 0.6rem; }
+            #no_results { margin: 1.5rem 1rem; }
+            .search-results-head { padding: 1.5rem 1rem 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <div class="header-eyebrow"><span class="live-dot"></span>MOTION MENTOR · LIVE XML</div>
+    <h1>CHEST <span>FORGE</span></h1>
+    <div class="header-sub">Complete chest muscle exercise library · tap any card for full instructions &amp; execution steps</div>
+</div>
+
+<!-- SEARCH BAR -->
+<div class="search-wrapper">
+    <div class="search-inner">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="search_input" placeholder="Search exercises, muscles, equipment…" autocomplete="off" spellcheck="false" />
+        <button id="search_clear" aria-label="Clear search">✕</button>
+    </div>
+    <div id="search_meta"></div>
+</div>
+
+<div id="loading_msg">
+    <div class="spinner"></div>
+    <div>Fetching exercises from Chest.xml …</div>
+</div>
+
+<div id="error_msg" style="display:none;"></div>
+
+<!-- SEARCH RESULTS -->
+<div id="search_results_section">
+    <div class="search-results-head" id="search_results_label">RESULTS</div>
+    <div class="exercise-grid" id="search_results_grid"></div>
+    <div id="no_results">
+        <div class="no-results-title" id="no_results_title">No exercises found</div>
+        <div class="no-results-sub" id="no_results_sub">Try a different keyword or browse below.</div>
+        <div class="related-label">You might like these instead</div>
+        <div class="suggestion-chips" id="suggestion_chips"></div>
+    </div>
+</div>
+
+<div id="sections_container"></div>
+
+<!-- MODAL -->
+<div id="steps_modal" role="dialog" aria-modal="true">
+    <div class="modal_inner">
+        <button id="close_modal_btn" onclick="window.closeModalFunc()">✕ CLOSE</button>
+        <div id="modal_body"></div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const XML_RAW_URL = "https://raw.githubusercontent.com/Hunny-Chaurasia/-myHealthyFitness/main/Chest.xml";
+    let ALL_POSES = [];
+
+    function esc(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+    function getText(parent, tag) {
+        if (!parent) return '';
+        const el = parent.getElementsByTagName(tag)[0];
+        return el ? el.textContent.trim() : '';
+    }
+
+    const LEVEL_ORDER = ['Novice', 'Beginner', 'Intermediate', 'Advanced', 'Expert'];
+    const LEVEL_META = {
+        'Novice':       { emoji: '⚪', dot: '#aaaaaa', label: 'NOVICE' },
+        'Beginner':     { emoji: '🟢', dot: '#5aff6b', label: 'BEGINNER' },
+        'Intermediate': { emoji: '🟡', dot: '#f5e03b', label: 'INTERMEDIATE' },
+        'Advanced':     { emoji: '🟠', dot: '#ff9d3b', label: 'ADVANCED' },
+        'Expert':       { emoji: '🔴', dot: '#ff4f4f', label: 'EXPERT' },
+    };
+
+    function normDiff(d) {
+        if (!d) return 'Beginner';
+        const s = d.trim().toLowerCase();
+        for (const lvl of LEVEL_ORDER) { if (s === lvl.toLowerCase()) return lvl; }
+        for (const lvl of LEVEL_ORDER) { if (s.includes(lvl.toLowerCase())) return lvl; }
+        return d.trim().charAt(0).toUpperCase() + d.trim().slice(1);
+    }
+
+    function parsePoses(xmlDoc) {
+        const poses = xmlDoc.getElementsByTagName('Pose');
+        if (!poses.length) throw new Error('No <Pose> elements found in XML.');
+        const out = [];
+        for (let i = 0; i < poses.length; i++) {
+            const p = poses[i];
+            let gif = '';
+            const urls = p.getElementsByTagName('url');
+            for (let u of urls) {
+                const t = u.getAttribute('type');
+                if (!t || t === 'gif') { gif = u.textContent.trim(); break; }
+            }
+            if (!gif && urls.length) gif = urls[0].textContent.trim();
+            const muscNode = p.getElementsByTagName('Focused_Muscles')[0];
+            let muscles = 'Core & stabilizers';
+            if (muscNode) {
+                const prim = muscNode.getElementsByTagName('Primary')[0];
+                muscles = prim ? prim.textContent.trim() : muscNode.textContent.trim().replace(/\s+/g, ' ');
+                if (muscles.length > 70) muscles = muscles.slice(0, 68) + '…';
+            }
+            const dcNode = p.getElementsByTagName('Diseases_Cured')[0];
+            let diseases = 'Supports overall mobility';
+            if (dcNode) {
+                const targ = dcNode.getElementsByTagName('Targeted')[0];
+                diseases = targ ? targ.textContent.trim() : dcNode.textContent.trim().replace(/\s+/g, ' ').slice(0, 120);
+            }
+            const steps = [];
+            for (let s of p.getElementsByTagName('step')) {
+                steps.push({ order: s.getAttribute('order') || (steps.length + 1), focus: s.getAttribute('focus') || 'Movement', text: s.textContent.trim().replace(/\s+/g, ' ') });
+            }
+            const mistakes = [];
+            const cmNode = p.getElementsByTagName('common_mistakes')[0];
+            if (cmNode) {
+                for (let m of cmNode.getElementsByTagName('mistake')) {
+                    const t = m.textContent.trim();
+                    if (t) mistakes.push(t);
+                }
+            }
+            out.push({
+                id: p.getAttribute('id') || i,
+                name: getText(p, 'Name') || 'Exercise',
+                difficulty: normDiff(p.getAttribute('difficulty')),
+                poseType: p.getAttribute('Pose_type') || 'Functional',
+                safety: p.getAttribute('safety') || '',
+                gif,
+                equipment: getText(p, 'Equipment') || 'No equipment',
+                muscles,
+                weightMax: getText(p, 'Weight_Max') || '',
+                ageGrp: getText(p, 'Age_Grp') || '',
+                preferredTime: getText(p, 'Preferred_Time') || getText(p, 'Preferred') || 'Anytime, after warm-up',
+                diseases,
+                steps,
+                mistakes
+            });
+        }
+        return out;
+    }
+
+    async function fetchXml() {
+        const proxies = [
+            XML_RAW_URL,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(XML_RAW_URL)}`,
+            `https://corsproxy.io/?${encodeURIComponent(XML_RAW_URL)}`,
+            `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(XML_RAW_URL)}`
+        ];
+        for (const url of proxies) {
+            try {
+                const res = await fetch(url, { cache: 'no-store', headers: { Accept: 'application/xml, text/xml' } });
+                if (!res.ok) continue;
+                const txt = await res.text();
+                if (txt.includes('<Pose')) return txt;
+            } catch (_) {}
+        }
+        throw new Error('Unable to fetch Chest.xml. Make sure the repository is public and the file exists.');
+    }
+
+    const FALLBACK = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180"%3E%3Crect width="320" height="180" fill="%23151515"/%3E%3Ctext x="50%25" y="50%25" fill="%23333" font-size="13" font-family="sans-serif" text-anchor="middle" dy=".3em"%3EPreview unavailable%3C/text%3E%3C/svg%3E';
+
+    function highlight(text, query) {
+        if (!query) return esc(text);
+        const safe = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return esc(text).replace(new RegExp(`(${safe})`, 'gi'), '<mark>$1</mark>');
+    }
+
+    function buildCard(pose, query) {
+        const card = document.createElement('div');
+        card.className = 'exercise-card' + (query ? ' search-match' : '');
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.addEventListener('click', () => openModal(pose));
+        card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openModal(pose); });
+        const media = document.createElement('div');
+        media.className = 'card-media';
+        const img = document.createElement('img');
+        img.alt = pose.name;
+        img.loading = 'lazy';
+        img.src = pose.gif && pose.gif.startsWith('http') ? pose.gif : FALLBACK;
+        img.onerror = () => { img.src = FALLBACK; };
+        const overlay = document.createElement('div');
+        overlay.className = 'card-media-overlay';
+        const badge = document.createElement('div');
+        badge.className = 'card-diff-badge';
+        badge.textContent = `${pose.difficulty} · ${pose.poseType}`;
+        media.appendChild(img);
+        media.appendChild(overlay);
+        media.appendChild(badge);
+        const body = document.createElement('div');
+        body.className = 'card-body';
+        const name = document.createElement('div');
+        name.className = 'card-name';
+        name.innerHTML = query ? highlight(pose.name, query) : esc(pose.name);
+        const meta = document.createElement('div');
+        meta.className = 'card-meta';
+        meta.innerHTML = `<span class="meta-chip">🛠️ <strong>${esc(pose.equipment.slice(0,35))}</strong></span><span class="meta-chip">🎯 ${esc(pose.muscles.slice(0,50))}</span>`;
+        const hint = document.createElement('div');
+        hint.className = 'card-tap-hint';
+        hint.textContent = '👆 Tap for full guide & steps';
+        body.appendChild(name);
+        body.appendChild(meta);
+        body.appendChild(hint);
+        card.appendChild(media);
+        card.appendChild(body);
+        return card;
+    }
+
+    /* ── SEARCH LOGIC ─────────────────────────────── */
+    let searchTimeout = null;
+
+    function scoreMatch(pose, q) {
+        const lq = q.toLowerCase();
+        let score = 0;
+        const nameLower = pose.name.toLowerCase();
+        if (nameLower === lq) score += 100;
+        else if (nameLower.startsWith(lq)) score += 70;
+        else if (nameLower.includes(lq)) score += 50;
+        if (pose.muscles.toLowerCase().includes(lq)) score += 30;
+        if (pose.equipment.toLowerCase().includes(lq)) score += 20;
+        if (pose.poseType.toLowerCase().includes(lq)) score += 15;
+        if (pose.difficulty.toLowerCase().includes(lq)) score += 10;
+        if (pose.diseases.toLowerCase().includes(lq)) score += 10;
+        return score;
+    }
+
+    function fuzzyRelated(poses, q) {
+        const words = q.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+        return poses
+            .map(p => {
+                const blob = (p.name + ' ' + p.muscles + ' ' + p.equipment + ' ' + p.poseType + ' ' + p.diseases).toLowerCase();
+                let s = words.reduce((acc, w) => acc + (blob.includes(w) ? 1 : 0), 0);
+                return { pose: p, s };
+            })
+            .filter(x => x.s > 0)
+            .sort((a, b) => b.s - a.s)
+            .slice(0, 6)
+            .map(x => x.pose);
+    }
+
+    function doSearch(raw) {
+        const q = raw.trim();
+        const searchSection = document.getElementById('search_results_section');
+        const sectionsContainer = document.getElementById('sections_container');
+        const grid = document.getElementById('search_results_grid');
+        const noResults = document.getElementById('no_results');
+        const meta = document.getElementById('search_meta');
+        const label = document.getElementById('search_results_label');
+        const clearBtn = document.getElementById('search_clear');
+
+        if (!q) {
+            searchSection.style.display = 'none';
+            sectionsContainer.style.display = '';
+            clearBtn.style.display = 'none';
+            meta.innerHTML = '';
+            return;
+        }
+
+        clearBtn.style.display = 'flex';
+        searchSection.style.display = 'block';
+        sectionsContainer.style.display = 'none';
+
+        const results = ALL_POSES
+            .map(p => ({ pose: p, score: scoreMatch(p, q) }))
+            .filter(x => x.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .map(x => x.pose);
+
+        grid.innerHTML = '';
+        noResults.style.display = 'none';
+
+        if (results.length > 0) {
+            label.textContent = `RESULTS FOR "${q.toUpperCase()}"`;
+            meta.innerHTML = `<span class="highlight">${results.length}</span> exercise${results.length !== 1 ? 's' : ''} matched`;
+            results.forEach(p => grid.appendChild(buildCard(p, q)));
+        } else {
+            label.textContent = 'NO DIRECT MATCHES';
+            meta.innerHTML = `<span style="color:#ff6b6b;">0 results</span> for "${esc(q)}"`;
+            noResults.style.display = 'block';
+            document.getElementById('no_results_title').textContent = `No results for "${q}"`;
+            document.getElementById('no_results_sub').textContent = "Couldn't find an exact match. Here are some related exercises:";
+            const related = fuzzyRelated(ALL_POSES, q);
+            const chips = document.getElementById('suggestion_chips');
+            chips.innerHTML = '';
+            if (related.length > 0) {
+                related.forEach(p => {
+                    const chip = document.createElement('button');
+                    chip.className = 'suggestion-chip';
+                    chip.textContent = p.name;
+                    chip.addEventListener('click', () => {
+                        document.getElementById('search_input').value = p.name;
+                        doSearch(p.name);
+                    });
+                    chips.appendChild(chip);
+                });
+            } else {
+                chips.innerHTML = '<span style="font-size:0.78rem;color:var(--dim);">No related exercises found. Try terms like "pec", "press", or "dumbbell".</span>';
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('search_input');
+        const clearBtn = document.getElementById('search_clear');
+        input.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => doSearch(input.value), 200);
+        });
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            doSearch('');
+            input.focus();
+        });
+    });
+
+    /* ── MODAL ─────────────────────────────────────── */
+    function openModal(pose) {
+        const mb = document.getElementById('modal_body');
+        mb.innerHTML = '';
+        if (pose.gif && pose.gif.startsWith('http')) {
+            const img = document.createElement('img');
+            img.src = pose.gif;
+            img.className = 'modal-img';
+            img.alt = pose.name;
+            mb.appendChild(img);
+        }
+        const title = document.createElement('div');
+        title.className = 'modal-title';
+        title.textContent = pose.name;
+        mb.appendChild(title);
+        const chips = document.createElement('div');
+        chips.className = 'modal-meta-row';
+        [pose.difficulty, pose.poseType, pose.ageGrp].filter(Boolean).forEach(t => {
+            const c = document.createElement('span');
+            c.className = 'modal-chip';
+            c.textContent = t;
+            chips.appendChild(c);
+        });
+        mb.appendChild(chips);
+        const grid = document.createElement('div');
+        grid.className = 'modal-info-grid';
+        [['📦 Equipment', pose.equipment], ['💪 Muscles', pose.muscles], ['⚖️ Weight Range', pose.weightMax || 'Bodyweight'], ['🌟 Helps With', pose.diseases]].forEach(([label, val]) => {
+            if (!val) return;
+            const cell = document.createElement('div');
+            cell.className = 'info-cell';
+            cell.innerHTML = `<div class="info-label">${label}</div><div class="info-val">${esc(val)}</div>`;
+            grid.appendChild(cell);
+        });
+        mb.appendChild(grid);
+        if (pose.safety) {
+            const safeDiv = document.createElement('div');
+            safeDiv.style.cssText = 'background:#12130a;border:1px solid rgba(255,107,53,0.15);border-radius:12px;padding:0.8rem 1rem;font-size:0.78rem;color:#d4a08a;line-height:1.55;margin-bottom:0.5rem;';
+            safeDiv.innerHTML = `<span style="color:#ff6b35;font-weight:700;letter-spacing:0.5px;">⚠ SAFETY NOTE</span><br>${esc(pose.safety)}`;
+            mb.appendChild(safeDiv);
+        }
+        if (pose.steps.length) {
+            const st = document.createElement('div');
+            st.className = 'steps-title';
+            st.textContent = '📋 EXECUTION STEPS';
+            mb.appendChild(st);
+            pose.steps.forEach(s => {
+                const row = document.createElement('div');
+                row.className = 'step-item';
+                const num = document.createElement('div');
+                num.className = 'step-num';
+                num.textContent = s.order;
+                const cont = document.createElement('div');
+                cont.className = 'step-content';
+                cont.innerHTML = `<div class="step-focus">${esc(s.focus)}</div><div class="step-text">${esc(s.text)}</div>`;
+                row.appendChild(num);
+                row.appendChild(cont);
+                mb.appendChild(row);
+            });
+        }
+        if (pose.mistakes.length) {
+            const mt = document.createElement('div');
+            mt.className = 'mistakes-title';
+            mt.textContent = '⚠️ COMMON MISTAKES';
+            mb.appendChild(mt);
+            pose.mistakes.forEach(m => {
+                const item = document.createElement('div');
+                item.className = 'mistake-item';
+                item.textContent = m;
+                mb.appendChild(item);
+            });
+        }
+        const modal = document.getElementById('steps_modal');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        modal.querySelector('.modal_inner').scrollTop = 0;
+    }
+
+    window.closeModalFunc = function () {
+        document.getElementById('steps_modal').style.display = 'none';
+        document.body.style.overflow = '';
+    };
+    document.getElementById('steps_modal').addEventListener('click', function (e) {
+        if (e.target === this) window.closeModalFunc();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') window.closeModalFunc(); });
+
+    /* ── POPULATE ──────────────────────────────────── */
+    function populate(poses) {
+        const groups = {};
+        poses.forEach(p => {
+            if (!groups[p.difficulty]) groups[p.difficulty] = [];
+            groups[p.difficulty].push(p);
+        });
+        const knownKeys = LEVEL_ORDER.filter(l => groups[l]);
+        const unknownKeys = Object.keys(groups).filter(k => !LEVEL_ORDER.includes(k)).sort();
+        const orderedKeys = [...knownKeys, ...unknownKeys];
+        const container = document.getElementById('sections_container');
+        container.innerHTML = '';
+        orderedKeys.forEach(lvl => {
+            const arr = groups[lvl];
+            const meta = LEVEL_META[lvl] || { emoji: '⚫', dot: '#666', label: lvl.toUpperCase() };
+            const sec = document.createElement('div');
+            const head = document.createElement('div');
+            head.className = 'section-head';
+            head.innerHTML = `${meta.emoji} ${meta.label}<span class="pill"><span class="dot" style="background:${meta.dot}"></span>${arr.length} exercise${arr.length !== 1 ? 's' : ''}</span>`;
+            const grid = document.createElement('div');
+            grid.className = 'exercise-grid';
+            arr.forEach(p => grid.appendChild(buildCard(p, '')));
+            sec.appendChild(head);
+            sec.appendChild(grid);
+            container.appendChild(sec);
+        });
+    }
+
+    /* ── INIT ──────────────────────────────────────── */
+    async function init() {
+        const loading = document.getElementById('loading_msg');
+        const errorDiv = document.getElementById('error_msg');
+        loading.style.display = 'flex';
+        errorDiv.style.display = 'none';
+        try {
+            const raw = await fetchXml();
+            const clean = raw.replace(/&(?!(amp|lt|gt|quot|apos|#x?[0-9a-fA-F]+);)/g, '&amp;');
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(clean, 'text/xml');
+            const err = doc.querySelector('parsererror');
+            if (err) throw new Error('XML parse error: ' + err.textContent.slice(0, 200));
+            const poses = parsePoses(doc);
+            if (!poses.length) throw new Error('No exercises found in Chest.xml.');
+            ALL_POSES = poses;
+            populate(poses);
+            loading.style.display = 'none';
+        } catch (err) {
+            console.error(err);
+            loading.style.display = 'none';
+            errorDiv.style.display = 'block';
+            errorDiv.innerHTML = `<div style="font-size:1.1rem;margin-bottom:10px;font-weight:700;">⚠️ LOAD FAILED</div><div style="background:#0e0a0a;padding:0.9rem;border-radius:12px;font-size:0.82rem;color:#f88;">${esc(err.message)}</div><div style="margin-top:0.9rem;font-size:0.75rem;color:#666;">Ensure <code style="background:#000;padding:2px 6px;border-radius:4px;">${esc(XML_RAW_URL)}</code> is publicly accessible.</div><button class="retry-btn" id="retryBtn">⟳ RETRY</button>`;
+            document.getElementById('retryBtn').addEventListener('click', init);
+        }
+    }
+
+    init();
+})();
+</script>
+</body>
+</html>
