@@ -4,12 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Motion Mentor Portal - Sign In</title>
+    <title> VitaGenie Portal - Sign In</title>
     <link rel="icon" href="WhatsApp Image 2025-09-24 at 10.58.05 PM.jpeg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -28,13 +30,13 @@
             color: #ffe8e8;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: conic-gradient(from 180deg at 50% 50%,
-                    #0a0f1c 0deg,
-                    #1a1f2e 60deg,
+                    #000000 0deg,
+                    #010206 60deg,
                     #0f1419 120deg,
-                    #161b2a 180deg,
+                    #030508 180deg,
                     #0a0f1c 240deg,
                     #1a1f2e 300deg,
-                    #0a0f1c 360deg);
+                    #000000 360deg);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -493,15 +495,49 @@
                 font-size: 2rem;
             }
         }
+
+        /* ── CURSOR ─── */
+        #cursor {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--lime);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+            mix-blend-mode: difference;
+        }
+
+        #cursor-ring {
+            position: fixed;
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(200, 241, 53, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.18s ease, width 0.2s ease, height 0.2s ease;
+        }
+
+        body:hover #cursor {
+            opacity: 1;
+        }
     </style>
 </head>
 
 <body>
+
+    <!-- Custom cursor -->
+    <div id="cursor"></div>
+    <div id="cursor-ring"></div>
     <div class="floating-elements"></div>
 
     <div>
         <div class="brand-logo"><i class="fas fa-heartbeat"></i></div>
-        <h1 class="main-title"> Motion Mentor</h1>
+        <h1 class="main-title"> VitaGenie</h1>
         <p class="welcome-subtitle" id="subtitle">Transform your health journey today</p>
         <div class="auth-container">
             <div class="mode-selector">
@@ -530,7 +566,8 @@
                     <div class="input-section">
                         <label class="field-label" for="confirmPassword">Confirm Password</label>
                         <div class="field-wrapper">
-                            <input type="password" id="confirmPassword" class="text-field" placeholder="Confirm strong password">
+                            <input type="password" id="confirmPassword" class="text-field"
+                                placeholder="Confirm strong password">
                             <span class="field-icon"><i class="fas fa-lock"></i></span>
                         </div>
                     </div>
@@ -540,8 +577,45 @@
                         <div class="field-wrapper">
                             <input type="email" id="email" class="text-field" placeholder="fitness@gmail.com">
                             <span class="field-icon"><i class="fas fa-envelope"></i></span>
+
                         </div>
                     </div>
+
+                    <div class="input-section">
+                        <label class="field-label" for="Weight">Weight</label>
+                        <div class="field-wrapper">
+                            <input type="password" id="Weight" class="text-field" placeholder="Your Weight">
+                            <span class="field-icon"><i class="fas fa-lock"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="input-section">
+                        <label class="field-label" for="Height">Height</label>
+                        <div class="field-wrapper">
+                            <input type="password" id="Height" class="text-field" placeholder="Your Height">
+                            <span class="field-icon"><i class="fas fa-lock"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="input-section">
+                        <label class="field-label" for="AnyInjury">Any Injury</label>
+                        <div class="field-wrapper">
+                            <textarea id="AnyInjury" class="text-field"
+                                placeholder="Any Injury ?? If Yes Please Mention"></textarea>
+                            <span class="field-icon"><i class="fas fa-lock"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="input-section">
+                        <label class="field-label" for="BreathingIssues ">Breathing Issues </label>
+                        <div class="field-wrapper">
+                            <textarea id="BreathingIssues" class="text-field"
+                                placeholder="Any Breathing Issues ?? If Yes Please Mention"></textarea>
+                            <span class="field-icon"><i class="fas fa-lock"></i></span>
+                        </div>
+                    </div>
+
+
                 </div>
 
                 <div class="input-section">
@@ -553,10 +627,26 @@
                             <option value="muscle-gain">💪 Muscle Building & Strength</option>
                             <option value="endurance">🏃 Cardio & Endurance</option>
                             <option value="wellness">🧘 Overall Health & Wellness</option>
+                            <option value="wellness">🧘 Street Workout</option>
                         </select>
                         <span class="field-icon"><i class="fas fa-crosshairs"></i></span>
                     </div>
                 </div>
+
+                <div class="input-section">
+                    <label class="field-label" for="role">Fitness Goal</label>
+                    <div class="field-wrapper">
+                        <select id="role" class="dropdown-field" required>
+                            <option value="">Select your body Type</option>
+                            <option value="weight-loss">🔥 Ectomorph: Lean, long, and slender</option>
+                            <option value="muscle-gain">💪 Mesomorph: Naturally muscular and athletic. </option>
+                            <option value="endurance">🏃 Endomorph: Round, stores fat.</option>
+
+                        </select>
+                        <span class="field-icon"><i class="fas fa-crosshairs"></i></span>
+                    </div>
+                </div>
+
 
                 <div class="health-feature">
                     <div class="health-feature-title"><i class="fas fa-heart"></i> 24/7 Health Monitoring</div>
@@ -569,7 +659,7 @@
                 </div>
 
                 <button type="submit" class="action-button" id="authBtn">
-                    <i class="fas fa-heartbeat"></i> Sign In to Motion Mentor
+                    <i class="fas fa-heartbeat"></i> Sign In to VitaGenie
                 </button>
                 <a href="data.html" style="margin-top: 10px; display: inline-block;">Skip For Now</a>
                 <div class="content-divider">
@@ -583,6 +673,35 @@
         const API_BASE_URL = 'http://localhost:5001/api';
         let currentMode = 'signin';
 
+        // ── CURSOR
+        const cursor = document.getElementById('cursor');
+        const ring = document.getElementById('cursor-ring');
+        let mx = 0, my = 0, rx = 0, ry = 0;
+        document.addEventListener('mousemove', e => {
+            mx = e.clientX; my = e.clientY;
+            cursor.style.left = mx + 'px';
+            cursor.style.top = my + 'px';
+        });
+        function animateRing() {
+            rx += (mx - rx) * 0.12;
+            ry += (my - ry) * 0.12;
+            ring.style.left = rx + 'px';
+            ring.style.top = ry + 'px';
+            requestAnimationFrame(animateRing);
+        }
+        animateRing();
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.width = '18px'; cursor.style.height = '18px';
+                ring.style.width = '52px'; ring.style.height = '52px';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.width = '10px'; cursor.style.height = '10px';
+                ring.style.width = '36px'; ring.style.height = '36px';
+            });
+        });
+
+
         function switchMode(mode) {
             currentMode = mode;
             const signinBtn = document.getElementById('signinMode');
@@ -595,14 +714,14 @@
                 signinBtn.classList.remove('active');
                 signupBtn.classList.add('active');
                 signupFields.classList.add('active');
-                authBtn.innerHTML = '<i class="fas fa-heartbeat"></i> Join Motion Mentor Community';
+                authBtn.innerHTML = '<i class="fas fa-heartbeat"></i> Join VitaGenie Community';
                 subtitle.textContent = 'Begin your transformation journey';
                 document.getElementById('confirmPassword').required = true;
             } else {
                 signupBtn.classList.remove('active');
                 signinBtn.classList.add('active');
                 signupFields.classList.remove('active');
-                authBtn.innerHTML = '<i class="fas fa-heartbeat"></i> Sign In to Motion Mentor';
+                authBtn.innerHTML = '<i class="fas fa-heartbeat"></i> Sign In to VitaGenie';
                 subtitle.textContent = 'Transform your health journey today';
                 document.getElementById('confirmPassword').required = false;
             }
@@ -666,7 +785,7 @@
                 right: 20px;
                 background: ${type === 'success' ? 'linear-gradient(135deg, #27ae60, #2ecc71)' :
                     type === 'error' ? 'linear-gradient(135deg, #e74c3c, #c0392b)' :
-                    'linear-gradient(135deg, #3498db, #2980b9)'};
+                        'linear-gradient(135deg, #3498db, #2980b9)'};
                 color: white;
                 padding: 15px 25px;
                 border-radius: 12px;
@@ -721,7 +840,7 @@
             }
 
             button.classList.add('loading');
-            button.innerHTML = currentMode === 'signin' ? '<i class="fas fa-spinner fa-pulse"></i> Connecting to Motion Mentor...' : '<i class="fas fa-spinner fa-pulse"></i> Building your profile...';
+            button.innerHTML = currentMode === 'signin' ? '<i class="fas fa-spinner fa-pulse"></i> Connecting to VitaGenie...' : '<i class="fas fa-spinner fa-pulse"></i> Building your profile...';
             button.disabled = true;
 
             let result;
@@ -735,7 +854,7 @@
 
             if (result.success) {
                 button.classList.add('success');
-                
+
                 const roleMessages = {
                     'weight-loss': '🔥 Welcome, Fat Burner! Ready to torch those calories?',
                     'muscle-gain': '💪 Welcome, Muscle Builder! Time to get swole!',
@@ -777,7 +896,7 @@
 
             setTimeout(() => {
                 button.classList.remove('success');
-                button.innerHTML = currentMode === 'signin' ? '<i class="fas fa-heartbeat"></i> Sign In to Motion Mentor' : '<i class="fas fa-heartbeat"></i> Join Motion Mentor Community';
+                button.innerHTML = currentMode === 'signin' ? '<i class="fas fa-heartbeat"></i> Sign In to VitaGenie' : '<i class="fas fa-heartbeat"></i> Join VitaGenie Community';
                 button.disabled = false;
             }, 3000);
         });
