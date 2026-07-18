@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { COLORSAuth, getCSSVariablesAuth } from './theme';
 import './AuthenticationForm.css';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 const ROLE_MESSAGES = {
   'weight-loss': '🔥 Welcome, Fat Burner! Ready to torch those calories?',
