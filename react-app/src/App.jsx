@@ -11,6 +11,7 @@ import { COLORSMulFiles, getCSSVariablesMulFiles } from './theme';
 import { AppNavProvider } from './AppNavContext';
 import BottomNav from './BottomNav';
 import HomeScreen from './HomeScreen';
+import './HomeBottom.css';
 // Aage jab Workouts/Settings/Nutrition/Progress screens banenge,
 // bas unhe yahan import karke niche render kar dena — har screen
 // khud check karega ki wo active hai ya nahi (jaise HomeScreen karta hai)
