@@ -3,6 +3,7 @@
 // Agar kabhi color scheme change karni ho, to bas yahi file edit karo —
 
 import VitaGenie from "./VitaGenie";
+import AuthenticationForm from "./AuthenticationForm";
 
 // poore app me automatically apply ho jayega (CSS variables ke through).
 // VitaGenie.jsx
