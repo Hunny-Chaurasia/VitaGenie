@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { COLORS, getCSSVariablesAuth } from './AuthenticationForm';
+import { COLORSAuth, getCSSVariablesAuth } from './AuthenticationForm';
 import './AuthenticationForm.css';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
