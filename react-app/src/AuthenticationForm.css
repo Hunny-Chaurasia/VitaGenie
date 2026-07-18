@@ -1,7 +1,12 @@
 /* VitaGenieAuth.css
    Koi bhi color yahan hardcoded nahi — sab var(--name) se aa raha hai,
    jo authTheme.js se root element pe inject hota hai. */
-
+#root, body, html {
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 .vg-root * {
   margin: 0;
   padding: 0;
