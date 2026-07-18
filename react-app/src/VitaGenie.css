@@ -3,6 +3,14 @@
    Saare colors var(--name) se aa rahe hain, jo theme.js se
    root element pe inline inject hote hain (see MotionMentor.jsx). */
 
+   /* Ensure the root containers take full width */
+#root, body, html {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Horizonatal scroll rokne ke liye */
+}
+
 .mm-root {
   background: var(--bg);
   color: var(--text);
