@@ -1,7 +1,7 @@
-import VitaGenie from "./VitaGenie.jsx";
+import AuthenticationForm from "./AuthenticationForm.jsx";
 
 function App() {
-  return <VitaGenie />;
+  return <AuthenticationForm />;
 }
 
 export default App;
