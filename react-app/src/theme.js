@@ -1,11 +1,5 @@
 // theme.js
-// Yahan pe saare colors ek hi jagah define hain.
-// Agar kabhi color scheme change karni ho, to bas yahi file edit karo —
 
-// import VitaGenie from "./VitaGenie";
-// import AuthenticationForm from "./AuthenticationForm";
-
-// poore app me automatically apply ho jayega (CSS variables ke through).
 // VitaGenie.jsx
 
 export const COLORSVG = {
@@ -36,8 +30,6 @@ export const COLORSVG = {
   dlWatermark: 'rgba(200,241,53,0.03)',
 };
 
-// Converts camelCase keys ("btnHover") to CSS variable names ("--btn-hover")
-// so we can inject the whole theme as inline CSS variables on the root element.
 export function getCSSVariables(colors = COLORSVG) {
   const vars = {};
   Object.entries(colors).forEach(([key, value]) => {
@@ -48,10 +40,6 @@ export function getCSSVariables(colors = COLORSVG) {
 }
 
 // Authentication.jsx
-// authTheme.js
-// VitaGenie Auth page — saare colors yahan constants ke roop mein.
-// Kahin bhi hex/rgba hardcode nahi karna, isi file se import karke use karo.
-
 export const COLORSAuth = {
   // base text / background
   bodyText: '#ffe8e8',
@@ -106,6 +94,80 @@ export const COLORSAuth = {
 };
 
 export function getCSSVariablesAuth(colors = COLORSAuth) {
+  const vars = {};
+  Object.entries(colors).forEach(([key, value]) => {
+    const kebabKey = key.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+    vars[`--${kebabKey}`] = value;
+  });
+  return vars;
+}
+
+
+// Har section (Home, Workouts, Settings, Nutrition, Progress, Community, News, Exercises)
+// BottonNav.jsx
+// HomeScreen.jsx
+export const COLORSMulFiles = {
+  // ── Base ──
+  bodyText: '#ffe8e8',
+  bgBlack: '#000000',
+  bgDark: '#0d0f12',
+
+  // ── Brand green (primary accent across app) ──
+  brandGreen: '#21a027',
+  brandGreenDark: '#01342e',
+  brandGreenSoft: '#22c55e',
+  brandGreenSofter: '#4ade80',
+  brandGreenDeep: '#16a34a',
+
+  // ── Blues ──
+  accentBlue: '#3b82f6',
+  accentBlueLight: '#60a5fa',
+  accentBlueDeep: '#2563eb',
+  accentBlueSky: '#42beeb',
+
+  // ── Purples ──
+  accentPurple: '#8b5cf6',
+  accentPurpleLight: '#a855f7',
+  accentPurpleSoft: '#a78bfa',
+
+  // ── Reds / Pinks ──
+  accentRed: '#ef4444',
+  accentRedSoft: '#f58383',
+  accentRedDeep: '#dc2626',
+
+  // ── Ambers / Yellows ──
+  accentAmber: '#f59e0b',
+  accentAmberDeep: '#d97706',
+  accentGold: '#ffc107',
+  accentGoldDark: 'goldenrod',
+
+  // ── Neutrals / Text ──
+  textPrimary: '#f8fafc',
+  textSecondary: '#94a3b8',
+  textMuted: '#6b7280',
+  textFaint: '#64748b',
+  white: '#ffffff',
+
+  // ── Surfaces ──
+  surfaceDark: '#161a20',
+  surfaceCard: '#0f0d2630',
+  surfaceGlass: '#ffffff17',
+  surfaceGlassLight: '#ffffff0d',
+
+  // ── Achievement icon gradients (start colors) ──
+  iconGreenStart: '#10b981',
+  iconGreenEnd: '#059669',
+  iconRedStart: '#ef4444',
+  iconRedEnd: '#dc2626',
+  iconYellowStart: '#f59e0b',
+  iconYellowEnd: '#d97706',
+  iconPurpleStart: '#8b5cf6',
+  iconPurpleEnd: '#7c3aed',
+  iconBlueStart: '#3b82f6',
+  iconBlueEnd: '#2563eb',
+};
+
+export function getCSSVariablesMulFiles(colors = COLORSMulFiles) {
   const vars = {};
   Object.entries(colors).forEach(([key, value]) => {
     const kebabKey = key.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
