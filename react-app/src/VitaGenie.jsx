@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { COLORS, getCSSVariables } from './theme';
+import { COLORSVG , getCSSVariables } from './theme';
 import './VitaGenie.css';
 
 const FEATURES = [
@@ -134,7 +134,7 @@ export default function VitaGenie() {
   }, []);
 
   return (
-    <div className="mm-root" ref={rootRef} style={getCSSVariables(COLORS)}>
+    <div className="mm-root" ref={rootRef} style={getCSSVariables(COLORSVG)}>
       <div id="mm-cursor" ref={cursorRef}></div>
       <div id="mm-cursor-ring" ref={ringRef}></div>
 
